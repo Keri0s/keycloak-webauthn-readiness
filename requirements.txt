@@ -1,0 +1,5 @@
+# Danh mục thư viện phụ thuộc của Đồ án N15 (Requirements)
+# Môi trường: Python 3.12+
+
+pyyaml>=6.0.0
+pytest>=9.0.0

@@ -1,0 +1,81 @@
+{
+  "started_at": "2026-11-17T17:28:00.917498+00:00",
+  "finished_at": "2026-11-17T17:28:03.440081+00:00",
+  "python": "3.12.10",
+  "database_vendor": "postgresql",
+  "assertions_enabled": true,
+  "source_hashes": {
+    "apps/lab/authn/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/lab/authn/admin.py": "a7ac68a753eeb831b6530bf71bf6917e577139f0734d17cc6a8666391564ab25",
+    "apps/lab/authn/apps.py": "8caa38902c4aa873a8facb298d719f7299bde53f046f229164e20a7e5b1ec52e",
+    "apps/lab/authn/backchannel.py": "62b720985916380ece8c0a14b07a6d536684950c785c1686eb74ec6647ee6b2f",
+    "apps/lab/authn/models.py": "0d9c000a47aeccc66f002eccdd31715b2dda61435e10270221edb14f56142384",
+    "apps/lab/authn/permissions.py": "e4c5c4ab0921e180c96b59c5715f790f350c970b9159dbc9b39d351aa07793e0",
+    "apps/lab/authn/services.py": "c14d997984210cb03ab4b49ded1a4c4b81d1edbc0d59cc877c27894b6a242f9e",
+    "apps/lab/authn/tests.py": "dae0da7efdcdb3a7fb572d5e914b60631099122d4a4727ac6434c016161c5fe1",
+    "apps/lab/authn/transactions.py": "de72c40fcd7d2ebe5a8dffca104776aa1cda96d2a858ccb5f10160c7d2a0ad85",
+    "apps/lab/authn/views.py": "2a9d9875d77129eab71e050c40c37985c2b90cac934cacc0caa07ee0a7655df1",
+    "apps/lab/config/oidc.py": "a280c6c0d9010c5e55718636d9765bfc26e80407d5504dd6a232ba310678b9d0",
+    "tmp/check_a16.py": "6302ba5487b0464d120ad75a1651545fc4d2bc33b72d6861f4ed7d851aeffbbb",
+    "tmp/audit_a16_reliability.py": "c7be221f172d577f08fa61f5f70ce1717939d523d424e0199ad9b36839ac3336"
+  },
+  "source_files_unchanged": true,
+  "functions_restored": true,
+  "results": [
+    {
+      "label": "01-original-baseline",
+      "test_variant": "original",
+      "observed": "PASS",
+      "exception": null,
+      "failure_line": null,
+      "cleanup_verified": true,
+      "matches_experiment_expectation": true
+    },
+    {
+      "label": "02-remove-owner-guard",
+      "test_variant": "original",
+      "observed": "FAIL",
+      "exception": "AssertionError",
+      "failure_line": "assert response.status_code == 400",
+      "cleanup_verified": true,
+      "matches_experiment_expectation": true
+    },
+    {
+      "label": "03-corrupt-state-return-400",
+      "test_variant": "original",
+      "observed": "FAIL",
+      "exception": "AssertionError",
+      "failure_line": "assert snapshot() == before",
+      "cleanup_verified": true,
+      "matches_experiment_expectation": true
+    },
+    {
+      "label": "04-reject-all-original-survivor",
+      "test_variant": "original",
+      "observed": "PASS",
+      "exception": null,
+      "failure_line": null,
+      "cleanup_verified": true,
+      "matches_experiment_expectation": true
+    },
+    {
+      "label": "05-positive-control-baseline",
+      "test_variant": "with_positive_control",
+      "observed": "PASS",
+      "exception": null,
+      "failure_line": null,
+      "cleanup_verified": true,
+      "matches_experiment_expectation": true
+    },
+    {
+      "label": "06-reject-all-positive-control",
+      "test_variant": "with_positive_control",
+      "observed": "FAIL",
+      "exception": "AssertionError",
+      "failure_line": "assert positive_response.status_code == 200, \"positive_owner_http\"",
+      "cleanup_verified": true,
+      "matches_experiment_expectation": true
+    }
+  ],
+  "scope": "A16 only; local PostgreSQL; Django test client; JWKS mocked; mutations in memory"
+}

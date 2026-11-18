@@ -1,0 +1,19 @@
+Python=3.12.10 Django=5.2.19
+Database=postgresql
+Source bundle SHA256=7e174327fbef35eaaec295e25ef69b00085cdc7a8e153311fea9b809d7d12ebe
+Scope: verified-login service, PostgreSQL session backend, /private/
+
+A4 started_at=2026-11-17T17:40:58.949551+00:00
+Before revocation: all 5 sessions authenticated, HTTP 200
+Revocation COMMIT returned at 2026-11-17T17:40:59.128740+00:00
+A4: probe data cleaned
+
+{
+  "case": "A4",
+  "variant": "mutant",
+  "observed": "FAIL",
+  "exception": "AssertionError",
+  "failure_line": "assert not Session.objects.filter(",
+  "cleanup_assertions_completed": true,
+  "experiment_expected": true
+}

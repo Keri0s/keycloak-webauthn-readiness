@@ -1,0 +1,23 @@
+Python=3.12.10 Django=5.2.19
+Database=postgresql
+Source bundle SHA256=90bce6f080afe6382fcd39db6d9d5d7c0d255a605232f25372373cad369ab983
+A14 started_at=2026-11-17T17:41:00.912529+00:00
+Scope: callback, real JWT validation, database, /private/
+OIDC_CALLBACK_REJECTED MissingClaimError missing_claim sid
+D-MISSING callback expected=400 observed=400; new groups=0; new bindings=0; backend=ANONYMOUS; private=403
+OIDC_CALLBACK_REJECTED InvalidClaimError invalid_claim sid
+D-EMPTY callback expected=400 observed=400; new groups=0; new bindings=0; backend=ANONYMOUS; private=403
+VALID-CONTROL callback=302; backend=AUTHENTICATED; private=200
+Both rejected sessions remain denied after valid login: OK
+A14: probe data cleaned
+A14: PASS
+
+{
+  "case": "A14",
+  "variant": "baseline",
+  "observed": "PASS",
+  "exception": null,
+  "failure_line": null,
+  "cleanup_assertions_completed": true,
+  "experiment_expected": true
+}

@@ -1,0 +1,36 @@
+Python=3.12.10 Django=5.2.19
+Database=postgresql
+Source bundle SHA256=9a664982ea18db569ddc685851d553111b788d057733993c05b73e6159787ad9
+A16 started_at=2026-11-17T17:28:02.631047+00:00
+Scope: signed logout token, SID/sub ownership, database, /private/
+D01 backend user matches; private expected=200 observed=200
+D02 backend user matches; private expected=200 observed=200
+D03 backend user matches; private expected=200 observed=200
+D04 backend user matches; private expected=200 observed=200
+D05 backend user matches; private expected=200 observed=200
+Logout token passed JWT validation and reached real service: OK
+Wrong subject logout expected=400 observed=400
+Groups, bindings, markers and backend sessions preserved: OK
+No logout receipt retained after rejection: OK
+G01 still belongs to U1: OK
+D01 backend user matches; private expected=200 observed=200
+D02 backend user matches; private expected=200 observed=200
+D03 backend user matches; private expected=200 observed=200
+D04 backend user matches; private expected=200 observed=200
+D05 backend user matches; private expected=200 observed=200
+D03 backend user matches; private expected=200 observed=200
+D04 backend user matches; private expected=200 observed=200
+D05 backend user matches; private expected=200 observed=200
+Positive owner control: target sessions denied, other sessions allowed, receipt processed
+A16: probe data cleaned
+A16: PASS
+
+{
+  "label": "05-positive-control-baseline",
+  "test_variant": "with_positive_control",
+  "observed": "PASS",
+  "exception": null,
+  "failure_line": null,
+  "cleanup_verified": true,
+  "matches_experiment_expectation": true
+}

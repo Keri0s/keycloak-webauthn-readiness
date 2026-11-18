@@ -1,155 +1,51 @@
 # Keycloak WebAuthn Readiness
 
-> **Hệ thống Đánh giá Mức sẵn sàng An ninh & Phòng thí nghiệm Kiểm chứng Xác thực Không mật khẩu WebAuthn/FIDO2 trên Keycloak**
+Đồ án xây dựng bộ đánh giá mức sẵn sàng an ninh và lab kiểm chứng xác thực, quản lý phiên với Keycloak, Django và PostgreSQL. Tác giả: Trần Trung Hiếu.
 
-![Python 3.12+](https://img.shields.io/badge/Python-3.12%2B-blue?logo=python)
-![Tests](https://img.shields.io/badge/Tests-81%2F81%20Passed%20(100%25)-success?logo=pytest)
-![Standards](https://img.shields.io/badge/Standards-OWASP%20ASVS%20%7C%20NIST%20SP%20800--63B-orange)
-![Security](https://img.shields.io/badge/Security-Zero%20Private%20Key%20Leakage-green)
-![Identity](https://img.shields.io/badge/Identity-FIDO2%20%7C%20WebAuthn%20%7C%20OAuth%202.1-blueviolet)
+## Trạng thái ngày 18/11/2026
 
----
+| Thành phần | Đã làm | Phần còn lại |
+| --- | --- | --- |
+| Readiness engine | Nạp YAML/CSV, kiểm tra dữ liệu, tính điểm, CLI; hồ sơ 81 tests PASS ngày 13/11 | Đưa bằng chứng đo từ lab vào phiếu thay cho dữ liệu mẫu |
+| Lab OIDC | Cấu hình Compose/Caddy, callback, liên kết danh tính, cookie phiên và logout | Hoàn thiện hướng dẫn dựng máy sạch; kiểm chứng thêm giao thức và vận hành |
+| Quản lý phiên | Group theo issuer/client/SID, binding Django session, marker thu hồi, receipt chống xử lý lặp, transaction lock | 10 ca còn lại trong ma trận 19 ca; các quyết định thu hồi theo subject |
+| Kiểm chứng phiên | 9/19 ca ghi PASS, một số fault injection đã chạy | Mở rộng coverage; concurrency và thử nghiệm Keycloak thật |
+| Sổ sự kiện, bằng chứng WebAuthn | Có dữ liệu và hồ sơ mẫu | Thu thập sự kiện thực, thử hủy xác thực, kiểm chứng không lộ private key và nghiệm thu |
 
-## 📌 1. Dự án này dùng cho việc gì? (Use Cases & Problem Statement)
+PASS hiện có chỉ áp dụng cho phạm vi từng bài kiểm thử. 81 tests readiness và 19 kịch bản phiên là hai bộ khác nhau. Điểm 29/37 là kết quả fixture, không phải điểm an ninh của lab. Đây là đồ án đang phát triển, chưa phải bản triển khai production đã nghiệm thu.
 
-### 1.1. Bài toán thực tế
-Trong xu hướng chuyển dịch kiến trúc an ninh sang mô hình **Zero Trust**, việc thay thế mật khẩu truyền thống bằng **Xác thực không mật khẩu (Passwordless Authentication / Passkey)** dựa trên chuẩn **FIDO2 / WebAuthn** đang là tiêu chuẩn hàng đầu để triệt tiêu các cuộc tấn công lừa đảo (Phishing-resistant).
+## Đọc repository từ đâu?
 
-Tuy nhiên, trong triển khai thực tế của các kỹ sư bảo mật và DevSecOps, hệ thống thường gặp hai lỗ hổng lớn:
-1. **Thiếu khung đánh giá mức sẵn sàng an ninh (Security Readiness):** Trước khi đưa hệ thống xác thực tập trung vào vận hành, quản trị viên thường cấu hình thiếu nhất quán (chưa bật TLS bắt buộc, lộ cờ debug, thiếu HTTP Security Headers, hoặc thư viện phụ thuộc chứa lỗ hổng chưa vá). Việc đánh giá thường mang tính cảm tính, thiếu thang đo định lượng và thiếu bằng chứng kỹ thuật có thể kiểm toán.
-2. **Ảo tưởng an toàn sau khi đăng nhập (Post-authentication Session Vulnerability):** FIDO2/WebAuthn bảo vệ xuất sắc giai đoạn chứng minh danh tính ban đầu, nhưng sau khi hoàn tất đăng nhập, hệ thống sẽ cấp phát phiên làm việc (Session Token / Cookie). Nếu máy chủ danh tính (IdP) và ứng dụng không cấu hình chặt chẽ theo chuẩn **OAuth 2.1 với PKCE**, kẻ tấn công vẫn có thể chiếm đoạt phiên qua **Session Hijacking / Pass-the-Cookie**, hoặc hệ thống không thể thu hồi phiên tức thì (Session Revocation) khi phát hiện rủi ro.
+| File/thư mục | Vai trò |
+| --- | --- |
+| [apps/](apps/README.md) | Hai phần ứng dụng readiness và lab |
+| [apps/readiness/](apps/readiness/README.md) | Models, loader, parser, evaluator và CLI tính điểm |
+| [apps/lab/](apps/lab/README.md) | Django app OIDC và ánh xạ phiên; có chú thích từng module |
+| [infra/](infra/README.md) | Docker Compose cho hai database, Keycloak và Caddy |
+| [tests/](tests/README.md) | Tests readiness và ma trận kịch bản phiên |
+| [tmp/](tmp/README.md) | Các script thực nghiệm được chọn để tái lập kết quả lab |
+| [docs/](docs/README.md) | Chỉ mục bằng chứng và kế hoạch công việc tiếp theo |
+| [docs/ROADMAP.md](docs/ROADMAP.md) | Đã làm, chưa làm, ưu tiên tiếp theo và giới hạn |
+| [docs/validation/](docs/validation/README.md) | Báo cáo, kết quả máy đọc được và hash nguồn tại thời điểm chạy |
+| [DU_LIEU_MAU/N15_San_sang_WebAuthn/](DU_LIEU_MAU/N15_San_sang_WebAuthn/README.md) | Catalog 16 tiêu chí, CSV và realm mẫu tổng hợp |
+| [evidence/](evidence/README.md) | Hồ sơ mẫu theo CH/VA/XT/NK, chưa phải nghiệm thu lab |
+| requirements.txt | Dependencies cho readiness/tests; lab có requirements riêng |
+| .gitignore | Loại secrets, runtime, DB, môi trường Python và tài liệu nội bộ |
 
-### 1.2. Giải pháp của `keycloak-webauthn-readiness`
-Dự án được xây dựng như một giải pháp công nghệ toàn diện kết hợp giữa **Bộ công cụ đánh giá có kiểm chứng (Auditable Readiness Engine)** và **Phòng thí nghiệm thực nghiệm an ninh (Security Verification Lab)**:
+## Chạy readiness
 
-* 📊 **Động cơ Đánh giá Mức sẵn sàng An ninh (Readiness Scorecard Engine):**
-  - Cung cấp công cụ CLI và API thẩm định tự động dựa trên **16 tiêu chí an ninh chuẩn hóa** chia làm **4 miền** cốt lõi: *Cấu hình an toàn, Quản lý vá lỗi, Xác thực an toàn, Quản lý nhật ký*.
-  - Giải thuật tính điểm xác định (deterministic sum) với cơ chế thẩm tra dữ liệu nghiêm ngặt: từ chối điểm vượt trần, từ chối điểm âm, bắt buộc có nguồn minh chứng kỹ thuật, và phân biệt rạch ròi giữa *"điểm 0 (đã kiểm tra nhưng không đạt)"* với *"chưa chấm (Incomplete)"*.
-* 🔐 **Phòng thí nghiệm Xác thực FIDO2/WebAuthn & Quản lý Phiên:**
-  - Thiết lập cụm Identity Provider (Keycloak) độc lập hỗ trợ luồng xác thực FIDO2 Passkey (Windows Hello / Chrome Virtual Authenticator / YubiKey).
-  - Tích hợp ứng dụng web bảo vệ qua **OAuth 2.1 Authorization Code Flow với PKCE (`S256`)**.
-  - Kiểm chứng cơ chế phòng vệ chống tấn công phiên: bảo vệ Session Cookie (`HttpOnly`, `Secure`, `SameSite`), cấu hình thời hạn phiên và cơ chế thu hồi phiên tức thì (Session Revocation / Back-channel Logout).
-* 📝 **Sổ bằng chứng số & Kiểm chứng không lộ Khóa riêng (Zero Private Key Leakage):**
-  - Tự động trích xuất các sự kiện xác thực thực tế (`LOGIN`, `LOGIN_ERROR`, trường hợp người dùng hủy hộp thoại Passkey) từ Keycloak Admin API vào Sổ bằng chứng số (Evidence Ledger).
-  - Kiểm chứng đa tầng chứng minh hệ thống **tuyệt đối không thu thập, không ghi nhật ký và không lưu trữ Khóa riêng (Private Key)** của người dùng.
+Từ thư mục gốc, dùng Python 3.12 trong môi trường ảo:
 
----
-
-## 🚀 2. Trạng thái phát triển & Kết quả kiểm thử
-
-| Thành phần | Trạng thái kỹ thuật | Minh chứng / Kết quả |
-| :--- | :---: | :--- |
-| **Động cơ Đánh giá (Readiness Engine)** | **HOÀN THÀNH (100%)** | Đầy đủ models, loader, parser, validator, calculator và CLI. |
-| **Bộ kiểm thử tự động (Test Suite)** | **81/81 TESTS PASS** | 8 bài kiểm thử chức năng chuẩn + 73 bài kiểm thử hồi quy bảo vệ biên. |
-| **Hồ sơ bằng chứng mẫu** | **HOÀN THÀNH** | 16 hồ sơ giải trình minh chứng tương ứng 16 tiêu chí. |
-| **Hạ tầng Keycloak Lab độc lập** | **ĐANG TRIỂN KHAI** | Chuẩn bị Docker Compose (Keycloak 26 + PostgreSQL + HTTPS proxy cổng `9443`). |
-| **App Lab OIDC PKCE & Sổ sự kiện** | **KẾ HOẠCH TIẾP THEO** | Kết nối ứng dụng lab qua OAuth 2.1, trích xuất sổ bằng chứng và quét khóa riêng. |
-
-> [!NOTE]
-> Kết quả kiểm thử 81/81 pass hiện tại xác minh tính đúng đắn tuyệt đối của giải thuật tính toán và các quy tắc kiểm tra tính hợp lệ dữ liệu. Điểm **29/37** là kết quả thực thi của bộ phiếu mẫu chuẩn (sample fixture).
-
----
-
-## 🛠️ 3. Cài đặt & Hướng dẫn sử dụng
-
-### 3.1. Yêu cầu môi trường
-* Hệ điều hành: Windows, Linux hoặc macOS.
-* Python: Phiên bản **3.12+**.
-* Docker & Docker Compose (phục vụ triển khai cụm lab Keycloak).
-
-### 3.2. Cài đặt thư viện
-```bash
-pip install -r requirements.txt
+```powershell
+python -m pip install -r requirements.txt
+python -m pytest tests -q
+python -m apps.readiness.cli --scorecard DU_LIEU_MAU/N15_San_sang_WebAuthn/phieu_cham_mau_day_du.csv --evaluator "Nguoi cham lab"
 ```
 
-### 3.3. Chạy toàn bộ 81 bài kiểm thử tự động
-```bash
-python -m pytest tests/ -v
-```
-*(Toàn bộ 81 test cases kiểm tra biên, bẫy lỗi số học, kiểu dữ liệu YAML/CSV và logic nghiệp vụ hoàn thành trong ~1 giây).*
+CLI nhận phiếu CSV và catalog YAML; ô chưa chấm khác điểm 0. Bộ mẫu có 16 tiêu chí, tổng tối đa 37. Chi tiết quy tắc nằm trong README của readiness.
 
-### 3.4. Chạy CLI chấm điểm mức sẵn sàng an ninh
+## Chạy lab
 
-#### Ca 1: Chấm phiếu đầy đủ hợp lệ (16/16 tiêu chí)
-```bash
-python -m apps.readiness.cli --scorecard DU_LIEU_MAU/N15_San_sang_WebAuthn/phieu_cham_mau_day_du.csv --evaluator "Tran Trung Hieu"
-```
-* **Kỳ vọng:** Trạng thái `[✓] HOÀN THÀNH`, Tổng điểm: **29 / 37 điểm** (đầy đủ nguồn minh chứng).
+Xem [apps/lab/README.md](apps/lab/README.md) và [infra/README.md](infra/README.md). Lab cần cấu hình realm/client, CA tin cậy, role database và danh tính đã liên kết. Clone repository rồi chạy Compose chưa đủ để tái tạo toàn bộ môi trường.
 
-#### Ca 2: Kiểm tra phiếu chưa chấm đủ tiêu chí (Phát hiện Incomplete)
-```bash
-python -m apps.readiness.cli --scorecard DU_LIEU_MAU/N15_San_sang_WebAuthn/phieu_cham_mau_thieu.csv --evaluator "Tran Trung Hieu"
-```
-* **Kỳ vọng:** Trạng thái `[✗] CHƯA HOÀN THÀNH`, liệt kê chính xác các tiêu chí còn thiếu (`NK-03`, `NK-04`) và không công nhận điểm tổng.
-
-#### Ca 3: Kiểm tra cơ chế chặn lỗi dữ liệu (Validation Guard)
-```bash
-python -m apps.readiness.cli --scorecard DU_LIEU_MAU/N15_San_sang_WebAuthn/phieu_cham_loi_vuot_diem.csv --evaluator "Tran Trung Hieu"
-```
-* **Kỳ vọng:** Hệ thống từ chối lưu phiếu với mã lỗi `2`, chỉ rõ vi phạm: *Điểm 5 của tiêu chí 'CH-01' vượt quá điểm tối đa cho phép là 3*.
-
----
-
-## 📊 4. Thang đo 16 tiêu chí an ninh (Tổng 37 điểm)
-
-Thang đo được thiết kế dựa trên các tiêu chuẩn an ninh thông tin quốc tế: **OWASP ASVS v4.0**, **NIST SP 800-63B**, **NIST SP 800-40/92/218**, **FIDO Alliance** và **NTIA SBOM**:
-
-| Miền kiểm soát | Mã nhóm | Tiêu chí | Điểm tối đa | Trọng tâm kiểm soát kỹ thuật | Căn cứ tham chiếu |
-| :--- | :---: | :---: | :---: | :--- | :--- |
-| **Cấu hình an toàn** | `cau_hinh` | 4 | **10 điểm** | TLS/HTTPS bắt buộc (`CH-01`), Tắt debug môi trường chạy (`CH-02`), HTTP Security Headers (`CH-03`), Quản lý bí mật qua biến môi trường (`CH-04`). | OWASP ASVS V9/V14, NIST SP 800-218 |
-| **Quản lý vá lỗi** | `va_loi` | 4 | **9 điểm** | Danh mục phần mềm SBOM (`VA-01`), Quét sạch lỗi Critical (`VA-02`), Vòng đời base image (`VA-03`), Nhật ký vá lỗi định kỳ (`VA-04`). | NTIA SBOM, NIST SP 800-40 |
-| **Xác thực an toàn** | `xac_thuc` | 4 | **10 điểm** | IdP tập trung qua OIDC (`XT-01`), Xác thực Passkey FIDO2 (`XT-02`), Chống brute-force (`XT-03`), Hết hạn & Thu hồi phiên (`XT-04`). | NIST SP 800-63B AAL3, WebAuthn L2, OWASP ASVS V2/V3 |
-| **Quản lý nhật ký** | `nhat_ky` | 4 | **8 điểm** | Ghi nhận sự kiện Login/Error (`NK-01`), Nhật ký không lộ bí mật/khóa (`NK-02`), Đồng bộ giờ NTP (`NK-03`), Lưu trữ log tập trung (`NK-04`). | OWASP ASVS V7, NIST SP 800-92 |
-
----
-
-## 📂 5. Cấu trúc mã nguồn
-
-```text
-keycloak-webauthn-readiness/
-├── apps/
-│   └── readiness/              # Động cơ đánh giá mức sẵn sàng an ninh
-│       ├── models.py           # Mô hình thực thể: Criterion, Catalog, Scorecard
-│       ├── loader.py           # Bộ nạp & thẩm định danh mục tiêu chí YAML
-│       ├── evaluator.py        # Bộ kiểm tra tính hợp lệ dữ liệu & tính tổng điểm
-│       ├── parser.py           # Bộ đọc & tiền xử lý file phiếu chấm CSV
-│       ├── cli.py              # Giao diện dòng lệnh chấm điểm trực quan
-│       └── README.md           # Đặc tả kỹ thuật chi tiết của module readiness
-├── DU_LIEU_MAU/                # Bộ dữ liệu mẫu & cấu hình tham chiếu
-│   └── N15_San_sang_WebAuthn/
-│       ├── tieu_chi.yaml       # Danh mục 16 tiêu chí an ninh chính thức (37 điểm)
-│       ├── phieu_cham_mau_day_du.csv    # Phiếu chấm đầy đủ mẫu (kết quả: 29 điểm)
-│       ├── phieu_cham_mau_thieu.csv     # Phiếu chấm thiếu tiêu chí mẫu
-│       ├── phieu_cham_loi_vuot_diem.csv # Phiếu chấm chứa dữ liệu vi phạm
-│       ├── so_bang_chung_mau.csv        # Cấu trúc Sổ bằng chứng sự kiện
-│       └── realm/              # File cấu hình mẫu Keycloak Realm (webauthn-lab)
-├── evidence/                   # Hồ sơ minh chứng kỹ thuật cho 16 tiêu chí
-│   ├── CH-01.md ... CH-04.md   # Minh chứng nhóm Cấu hình
-│   ├── VA-01.md ... VA-04.md   # Minh chứng nhóm Vá lỗi
-│   ├── XT-01.md ... XT-04.md   # Minh chứng nhóm Xác thực
-│   └── NK-01.md ... NK-04.md   # Minh chứng nhóm Nhật ký
-├── tests/                      # Bộ kiểm thử tự động toàn diện (81 test cases)
-│   ├── test_fr01_catalog.py    # Kiểm thử bộ nạp danh mục tiêu chí
-│   ├── test_fr02_validation.py # Kiểm thử bộ thẩm tra hợp lệ dữ liệu
-│   ├── test_fr03_calculator.py # Kiểm thử bộ tính điểm xác định & phiếu thiếu
-│   └── test_readiness_regressions.py # 73 ca kiểm thử hồi quy bảo vệ biên
-├── infra/                      # Cấu hình Docker Compose cho cụm Keycloak Lab
-├── docs/                       # Tài liệu kỹ thuật & nhật ký thẩm định
-│   └── validation/             # Báo cáo kết quả chạy kiểm thử tự động
-└── requirements.txt            # Danh mục thư viện phụ thuộc của dự án
-```
-
----
-
-## 🔒 6. Ranh giới an toàn & Kiểm soát bảo mật
-
-* **Môi trường thử nghiệm cô lập:** Tất cả các thực nghiệm xác thực và đánh giá được thực hiện trong môi trường lab khép kín (isolated network), sử dụng hoàn toàn dữ liệu giả lập (synthetic data).
-* **Bảo vệ khóa riêng (Zero Private Key Leakage):** Kiến trúc hệ thống tuân thủ nghiêm ngặt nguyên lý của WebAuthn: Khóa riêng được sinh ra và lưu trữ an toàn trong phần cứng của Authenticator (TPM, Secure Enclave, YubiKey); Relying Party / Keycloak chỉ lưu trữ Khóa công khai (Public Key) và Credential ID. Mọi cơ sở dữ liệu, nhật ký và API đều được kiểm tra tự động để đảm bảo không rò rỉ khóa riêng.
-* **Cách ly hạ tầng:** Cụm Keycloak Lab sử dụng cổng mạng riêng (`9443`), cơ sở dữ liệu và named volume độc lập, không dùng chung tài nguyên hay ảnh hưởng đến bất kỳ dịch vụ nào khác trên máy chủ.
-
----
-
-## 👤 7. Tác giả & Bản quyền
-
-* **Tác giả:** **Trần Trung Hiếu** — Kỹ sư An toàn thông tin & Phát triển hệ thống.
-* **Mục đích:** Dự án nghiên cứu kỹ thuật cá nhân phục vụ mục đích học thuật và thực nghiệm an toàn thông tin chuyên sâu (Identity and Access Management / FIDO2 WebAuthn & DevSecOps).
+Bản public không chứa `.env`, khóa riêng, CA runtime, dữ liệu PostgreSQL, cookie, token hoặc tài khoản thật. Chỉ dùng lab local với dữ liệu tổng hợp. SRS là tài liệu định hướng học thuật; phạm vi nghiệm thu cuối cùng còn cần được xác nhận. Các tài liệu bàn giao và trao đổi nội bộ không nằm trong bản public.

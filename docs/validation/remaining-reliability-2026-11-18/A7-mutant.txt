@@ -1,0 +1,21 @@
+Python=3.12.10 Django=5.2.19
+Database=postgresql
+Source bundle SHA256=173c90c5cd2264a8fd53e9120901feef099586d3c32f420f56996485ccf3d698
+Scope: repeated SID revocation, PostgreSQL backend, /private/
+
+A7 started_at=2026-11-17T17:41:00.081881+00:00
+Before revocation: all 5 sessions authenticated, HTTP 200
+Revocation COMMIT returned at 2026-11-17T17:41:00.254231+00:00
+First revoked_at=2026-11-17T17:41:00.246818+00:00
+Second call_at=2026-11-17T17:41:00.261109+00:00
+A7: probe data cleaned
+
+{
+  "case": "A7",
+  "variant": "mutant",
+  "observed": "FAIL",
+  "exception": "AssertionError",
+  "failure_line": "assert revocation_snapshot() == after_first",
+  "cleanup_assertions_completed": true,
+  "experiment_expected": true
+}

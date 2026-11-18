@@ -1,0 +1,21 @@
+Python=3.12.10 Django=5.2.19
+Database=postgresql
+Source bundle SHA256=c3c14e2f581632f987123dbc324f299889495b2ecbb7ca2fb52e056e9cd0dc88
+A15 started_at=2026-11-17T17:41:01.571699+00:00
+Scope: signed callback, SID ownership, PostgreSQL, /private/
+D01 backend user matches; private expected=200 observed=200
+D02 backend user matches; private expected=200 observed=200
+D03 backend user matches; private expected=200 observed=200
+D04 backend user matches; private expected=200 observed=200
+D05 backend user matches; private expected=200 observed=200
+A15: probe data cleaned
+
+{
+  "case": "A15",
+  "variant": "mutant",
+  "observed": "FAIL",
+  "exception": "AssertionError",
+  "failure_line": "assert response.status_code == 403",
+  "cleanup_assertions_completed": true,
+  "experiment_expected": true
+}

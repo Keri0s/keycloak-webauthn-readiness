@@ -1,0 +1,21 @@
+Python=3.12.10 Django=5.2.19
+Database=postgresql
+Source bundle SHA256=9a664982ea18db569ddc685851d553111b788d057733993c05b73e6159787ad9
+A16 started_at=2026-11-17T17:28:01.796829+00:00
+Scope: signed logout token, SID/sub ownership, database, /private/
+D01 backend user matches; private expected=200 observed=200
+D02 backend user matches; private expected=200 observed=200
+D03 backend user matches; private expected=200 observed=200
+D04 backend user matches; private expected=200 observed=200
+D05 backend user matches; private expected=200 observed=200
+A16: probe data cleaned
+
+{
+  "label": "02-remove-owner-guard",
+  "test_variant": "original",
+  "observed": "FAIL",
+  "exception": "AssertionError",
+  "failure_line": "assert response.status_code == 400",
+  "cleanup_verified": true,
+  "matches_experiment_expectation": true
+}

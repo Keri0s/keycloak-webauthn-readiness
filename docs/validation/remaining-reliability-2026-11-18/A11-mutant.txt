@@ -1,0 +1,22 @@
+Python=3.12.10 Django=5.2.19
+Database=postgresql
+Source bundle SHA256=d0ba731df72ec0fa3221943b6b583550b794e4253e0002d60c1508b32c8a1e42
+A11 started_at=2026-11-17T17:41:00.642607+00:00
+D01 expected=AUTHENTICATED/200 observed=AUTHENTICATED/200
+D02 expected=AUTHENTICATED/200 observed=AUTHENTICATED/200
+D03 expected=AUTHENTICATED/200 observed=AUTHENTICATED/200
+D04 expected=AUTHENTICATED/200 observed=AUTHENTICATED/200
+D05 expected=AUTHENTICATED/200 observed=AUTHENTICATED/200
+Before new login: G01 has 2 active bindings
+New login COMMIT returned at 2026-11-17T17:41:00.841925+00:00
+A11: probe data cleaned
+
+{
+  "case": "A11",
+  "variant": "mutant",
+  "observed": "FAIL",
+  "exception": "AssertionError",
+  "failure_line": "assert original_snapshot() == before",
+  "cleanup_assertions_completed": true,
+  "experiment_expected": true
+}

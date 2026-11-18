@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <title>Trang được bảo vệ</title>
+</head>
+<body>
+    <h1>Trang được bảo vệ</h1>
+    <p>Xin chào, {{ lab_user.get_username }}.</p>
+
+    <form method="post" action="{% url 'oidc_logout' %}">
+        {% csrf_token %}
+        <button type="submit">Đăng xuất</button>
+    </form>
+</body>
+</html>

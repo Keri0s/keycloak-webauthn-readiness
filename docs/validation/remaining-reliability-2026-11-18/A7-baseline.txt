@@ -1,0 +1,31 @@
+Python=3.12.10 Django=5.2.19
+Database=postgresql
+Source bundle SHA256=173c90c5cd2264a8fd53e9120901feef099586d3c32f420f56996485ccf3d698
+Scope: repeated SID revocation, PostgreSQL backend, /private/
+
+A7 started_at=2026-11-17T17:40:59.752946+00:00
+Before revocation: all 5 sessions authenticated, HTTP 200
+Revocation COMMIT returned at 2026-11-17T17:40:59.944924+00:00
+First revoked_at=2026-11-17T17:40:59.936886+00:00
+Second call_at=2026-11-17T17:40:59.950668+00:00
+Second revocation COMMIT returned
+Group, binding, session and marker state unchanged: OK
+D01 expected=INVALIDATED/403 observed=INVALIDATED/403
+D02 expected=INVALIDATED/403 observed=INVALIDATED/403
+D03 expected=AUTHENTICATED/200 observed=AUTHENTICATED/200
+D04 expected=AUTHENTICATED/200 observed=AUTHENTICATED/200
+D05 expected=AUTHENTICATED/200 observed=AUTHENTICATED/200
+A7: PASS
+A7: probe data cleaned
+
+A7 repeated revocation passed: OK
+
+{
+  "case": "A7",
+  "variant": "baseline",
+  "observed": "PASS",
+  "exception": null,
+  "failure_line": null,
+  "cleanup_assertions_completed": true,
+  "experiment_expected": true
+}

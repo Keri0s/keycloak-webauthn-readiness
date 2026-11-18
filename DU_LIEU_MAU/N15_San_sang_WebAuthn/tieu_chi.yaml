@@ -1,0 +1,117 @@
+phien_ban: 0.1-mau
+ghi_chu: Thang mẫu 16 tiêu chí, 4 nhóm. Căn cứ ghi ở mức chương/mục; nhóm đối chiếu
+  mục cụ thể của phiên bản chuẩn đang dùng [CẦN KIỂM CHỨNG].
+tieu_chi:
+- ma: CH-01
+  nhom: cau_hinh
+  mo_ta: TLS bật cho mọi điểm vào; chuyển hướng HTTP→HTTPS
+  can_cu: OWASP ASVS V9 (Communication)
+  diem_toi_da: 3
+  cach_thu_bang_chung: Đọc cấu hình/tài liệu/nhật ký của ứng dụng lab; không quét
+    mạng
+- ma: CH-02
+  nhom: cau_hinh
+  mo_ta: Tắt chế độ debug/thông báo lỗi chi tiết ở môi trường chạy
+  can_cu: OWASP ASVS V7/V14
+  diem_toi_da: 2
+  cach_thu_bang_chung: Đọc cấu hình/tài liệu/nhật ký của ứng dụng lab; không quét
+    mạng
+- ma: CH-03
+  nhom: cau_hinh
+  mo_ta: Tiêu đề bảo mật HTTP (CSP, HSTS, X-Content-Type-Options)
+  can_cu: OWASP ASVS V14
+  diem_toi_da: 2
+  cach_thu_bang_chung: Đọc cấu hình/tài liệu/nhật ký của ứng dụng lab; không quét
+    mạng
+- ma: CH-04
+  nhom: cau_hinh
+  mo_ta: Bí mật không nằm trong mã/ảnh container; nạp từ biến môi trường hoặc kho
+    bí mật
+  can_cu: OWASP ASVS V14; NIST SP 800-218
+  diem_toi_da: 3
+  cach_thu_bang_chung: Đọc cấu hình/tài liệu/nhật ký của ứng dụng lab; không quét
+    mạng
+- ma: VA-01
+  nhom: va_loi
+  mo_ta: Có danh mục thành phần (SBOM) hoặc danh sách phụ thuộc có phiên bản
+  can_cu: NTIA SBOM Minimum Elements
+  diem_toi_da: 2
+  cach_thu_bang_chung: Đọc cấu hình/tài liệu/nhật ký của ứng dụng lab; không quét
+    mạng
+- ma: VA-02
+  nhom: va_loi
+  mo_ta: Không còn phụ thuộc có lỗ hổng mức Critical đã có bản vá
+  can_cu: Kết quả quét phụ thuộc
+  diem_toi_da: 3
+  cach_thu_bang_chung: Đọc cấu hình/tài liệu/nhật ký của ứng dụng lab; không quét
+    mạng
+- ma: VA-03
+  nhom: va_loi
+  mo_ta: Ảnh nền hệ điều hành/container còn được hỗ trợ (chưa EOL)
+  can_cu: Tài liệu nhà cung cấp
+  diem_toi_da: 2
+  cach_thu_bang_chung: Đọc cấu hình/tài liệu/nhật ký của ứng dụng lab; không quét
+    mạng
+- ma: VA-04
+  nhom: va_loi
+  mo_ta: Quy trình cập nhật có ghi chép (ai, khi nào, phiên bản)
+  can_cu: NIST SP 800-40
+  diem_toi_da: 2
+  cach_thu_bang_chung: Đọc cấu hình/tài liệu/nhật ký của ứng dụng lab; không quét
+    mạng
+- ma: XT-01
+  nhom: xac_thuc
+  mo_ta: Đăng nhập qua IdP tập trung (OIDC), ứng dụng không tự lưu mật khẩu
+  can_cu: NIST SP 800-63B; OIDC Core
+  diem_toi_da: 3
+  cach_thu_bang_chung: Đọc cấu hình/tài liệu/nhật ký của ứng dụng lab; không quét
+    mạng
+- ma: XT-02
+  nhom: xac_thuc
+  mo_ta: Có xác thực chống giả mạo (passkey/WebAuthn) cho tài khoản quản trị
+  can_cu: NIST SP 800-63B AAL3; WebAuthn L2
+  diem_toi_da: 3
+  cach_thu_bang_chung: Đọc cấu hình/tài liệu/nhật ký của ứng dụng lab; không quét
+    mạng
+- ma: XT-03
+  nhom: xac_thuc
+  mo_ta: Giới hạn đăng nhập sai (brute-force protection)
+  can_cu: OWASP ASVS V2
+  diem_toi_da: 2
+  cach_thu_bang_chung: Đọc cấu hình/tài liệu/nhật ký của ứng dụng lab; không quét
+    mạng
+- ma: XT-04
+  nhom: xac_thuc
+  mo_ta: Phiên hết hạn khi nhàn rỗi và đăng xuất hủy phiên ở IdP
+  can_cu: OWASP ASVS V3
+  diem_toi_da: 2
+  cach_thu_bang_chung: Đọc cấu hình/tài liệu/nhật ký của ứng dụng lab; không quét
+    mạng
+- ma: NK-01
+  nhom: nhat_ky
+  mo_ta: Ghi sự kiện đăng nhập thành công/thất bại có thời điểm
+  can_cu: OWASP ASVS V7
+  diem_toi_da: 3
+  cach_thu_bang_chung: Đọc cấu hình/tài liệu/nhật ký của ứng dụng lab; không quét
+    mạng
+- ma: NK-02
+  nhom: nhat_ky
+  mo_ta: Nhật ký không chứa mật khẩu, token, khóa
+  can_cu: OWASP ASVS V7
+  diem_toi_da: 2
+  cach_thu_bang_chung: Đọc cấu hình/tài liệu/nhật ký của ứng dụng lab; không quét
+    mạng
+- ma: NK-03
+  nhom: nhat_ky
+  mo_ta: Đồng hồ đồng bộ (NTP) giữa các máy
+  can_cu: NIST SP 800-92
+  diem_toi_da: 1
+  cach_thu_bang_chung: Đọc cấu hình/tài liệu/nhật ký của ứng dụng lab; không quét
+    mạng
+- ma: NK-04
+  nhom: nhat_ky
+  mo_ta: Nhật ký được lưu tập trung và giữ tối thiểu theo quy định của đơn vị
+  can_cu: NIST SP 800-92
+  diem_toi_da: 2
+  cach_thu_bang_chung: Đọc cấu hình/tài liệu/nhật ký của ứng dụng lab; không quét
+    mạng

@@ -1,0 +1,53 @@
+{
+  "realm": "webauthn-lab",
+  "enabled": true,
+  "eventsEnabled": true,
+  "eventsExpiration": 2592000,
+  "adminEventsEnabled": true,
+  "enabledEventTypes": [
+    "LOGIN",
+    "LOGIN_ERROR",
+    "LOGOUT",
+    "UPDATE_CREDENTIAL",
+    "REMOVE_CREDENTIAL",
+    "REGISTER",
+    "CUSTOM_REQUIRED_ACTION",
+    "CUSTOM_REQUIRED_ACTION_ERROR"
+  ],
+  "users": [
+    {
+      "username": "pk_user01",
+      "enabled": true,
+      "firstName": "pk_user01",
+      "lastName": "Lab",
+      "email": "pk_user01@lab.invalid",
+      "emailVerified": true
+    },
+    {
+      "username": "pk_admin",
+      "enabled": true,
+      "firstName": "pk_admin",
+      "lastName": "Lab",
+      "email": "pk_admin@lab.invalid",
+      "emailVerified": true
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "app-lab",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "redirectUris": [
+        "https://app.lab.local/*",
+        "http://localhost:3000/*"
+      ],
+      "webOrigins": [
+        "+"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      }
+    }
+  ]
+}

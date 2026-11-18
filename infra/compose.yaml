@@ -1,0 +1,64 @@
+name: readiness-lab
+
+services:
+  caddy:
+    image: caddy:2.11.9-alpine
+    ports:
+      - "127.0.0.1:9443:9443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./.runtime/caddy-data:/data
+      - ./.runtime/caddy-config:/config
+    networks:
+      default:
+        aliases:
+          - app.readiness.test
+  keycloak-db:
+    image: postgres:17.12-bookworm
+    environment:
+      POSTGRES_DB: keycloak_lab
+      POSTGRES_USER: keycloak_lab
+      POSTGRES_PASSWORD: ${KEYCLOAK_DB_PASSWORD:?Hay_dat_KEYCLOAK_DB_PASSWORD_trong_file_env}
+    volumes:
+      - ./.runtime/keycloak-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U keycloak_lab -d keycloak_lab"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.8.2
+    command: ["start"]
+    volumes:
+      - ./.runtime/keycloak-trust/readiness-root.pem:/opt/keycloak/conf/readiness-root.pem:ro
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-db:5432/keycloak_lab
+      KC_DB_USERNAME: keycloak_lab
+      KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD:?Hay_dat_KEYCLOAK_DB_PASSWORD}
+
+      KC_HOSTNAME: https://auth.readiness.test:9443
+      KC_TRUSTSTORE_PATHS: /opt/keycloak/conf/readiness-root.pem
+      KC_HTTP_ENABLED: "true"
+      KC_PROXY_HEADERS: xforwarded
+      
+    depends_on:
+      keycloak-db:
+        condition: service_healthy
+  app-db:
+    image: postgres:17.12-bookworm
+    environment:
+      POSTGRES_DB: readiness_lab
+      POSTGRES_USER: lab_db_admin
+      POSTGRES_PASSWORD: ${LAB_DB_ADMIN_PASSWORD:?Hay_dat_LAB_DB_ADMIN_PASSWORD}
+    ports:
+      - "127.0.0.1:15432:5432"
+    volumes:
+      - ./.runtime/app-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lab_db_admin -d readiness_lab"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s

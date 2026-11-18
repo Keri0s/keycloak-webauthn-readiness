@@ -1,0 +1,56 @@
+{
+  "time": "2026-11-13T11:00:55.344796+07:00",
+  "environment": {
+    "python": "3.12.10",
+    "os": "Windows-11-10.0.26300-SP0",
+    "PyYAML": "6.0.3",
+    "pytest": "9.2.0"
+  },
+  "test_command": "python -B -m pytest tests -q -p no:cacheprovider --basetemp tmp/publication-check-d93ecbb201 --junitxml docs/validation/readiness-2026-11-13/results.xml",
+  "expected": "81 readiness tests pass; sample score is 29/37, missing criteria are detected, and over-limit score is rejected",
+  "observed": {
+    "tests": "81",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "time": "1.134"
+  },
+  "cli_runs": [
+    {
+      "input": "DU_LIEU_MAU/N15_San_sang_WebAuthn/phieu_cham_mau_day_du.csv",
+      "expected_exit_code": 0,
+      "observed_exit_code": 0,
+      "expected_output_contains": "29 / 37",
+      "matched": true
+    },
+    {
+      "input": "DU_LIEU_MAU/N15_San_sang_WebAuthn/phieu_cham_mau_thieu.csv",
+      "expected_exit_code": 0,
+      "observed_exit_code": 0,
+      "expected_output_contains": "NK-03, NK-04",
+      "matched": true
+    },
+    {
+      "input": "DU_LIEU_MAU/N15_San_sang_WebAuthn/phieu_cham_loi_vuot_diem.csv",
+      "expected_exit_code": 2,
+      "observed_exit_code": 2,
+      "expected_output_contains": "Điểm 5",
+      "matched": true
+    }
+  ],
+  "source_hashes": {
+    "apps/readiness/__init__.py": "ba07f32611126f257ac07aec576a6a52165cf999fc8b80215fd0f1504476ba2d",
+    "apps/readiness/cli.py": "857e6ec7751213bdd9d18eb8306a66021fea99d9bf684fc1a21ebb8748926573",
+    "apps/readiness/evaluator.py": "651881b98ae515cfe6926622e913aafc2711586e3dc603f9be0c74f38f9d5fb4",
+    "apps/readiness/loader.py": "3d8ebb9a065fbd831577e75e6599d0eb426a29e4c0377a57ceac23f4a8456fa0",
+    "apps/readiness/models.py": "2f7b1427ccf240ed204dbe0f3bb972b9ac14bf2be93af6d38c3ba1d3dcf34602",
+    "apps/readiness/parser.py": "be5e1105938acd7c775afd284ac9f8a4117c5a5aa3b0049dcd2486090d8eddde",
+    "tests/test_fr01_catalog.py": "b1fd449487d8228ea58e84f67f01e1f2fb5dfa68b49c529f17cdf55401312a93",
+    "tests/test_fr02_validation.py": "3d9c044f148f01f845aeca520773c1ebe8b88c38d92c087575cb0d8ff9330c1a",
+    "tests/test_fr03_calculator.py": "b01bf6a15e0e2f997fcdfb086cea39fe0c64f9a1e54869cad64d9d4cb71b21ee",
+    "tests/test_readiness_regressions.py": "2529788eada23ec0709c401d9a3d530466f2e930ce36a0827898c281ee89caf2"
+  },
+  "limitations": [
+    "Local tests with synthetic fixtures; no clean-machine setup test; no Keycloak/WebAuthn or security acceptance."
+  ]
+}

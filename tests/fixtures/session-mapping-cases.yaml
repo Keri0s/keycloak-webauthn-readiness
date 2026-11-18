@@ -1,0 +1,886 @@
+# YAML 1.2 — đặc tả kiểm chứng v1.2
+schema_version: '1.2'
+suite_id: SESSION_MAPPING_A
+title: Kiểm chứng ánh xạ phiên Keycloak và Django
+created_on: '2026-11-15'
+language: vi
+design_reference: ../../docs/lab-decisions.md
+design_issue: A
+invariant_contract:
+  version: '1.1'
+  document: ../../docs/lab-decisions.md
+  decision: D08
+  invariant_ids: [INV-A01, INV-A02, INV-A03, INV-A04, INV-A05, INV-A06, INV-A07, INV-A08]
+  coverage_status: PARTIAL_IN_PROGRESS
+requirement_refs: [FR-05, D05]
+workflow_tasks: [P3-T1, P3-T2, P3-T3]
+scope:
+  level: TEST_DESIGN_SPECIFICATION
+  synthetic_data: true
+  executable_runner_available: false
+  description: Đặc tả dữ liệu giả định, chưa có runner. Có thể kiểm tra logic trước; chỉ chạy mô hình trong bộ nhớ
+    không đủ nghiệm thu invalidation của Django backend hoặc concurrency. B/C vẫn phải kiểm chứng giao thức riêng.
+  session_reference_policy: D01, D-TEMP, D-NEW và các mã tương tự là tham chiếu phiên giả định, không phải cookie
+    hoặc session_key thật. Khi kiểm thử Django thực tế, so sánh key nội bộ rồi chỉ ghi kết quả so sánh đã loại bí
+    mật.
+  authorization_results: {ALLOW: Được truy cập tài nguyên được bảo vệ trong phạm vi ca kiểm tra., DENY: Không được
+      truy cập; mã HTTP/redirect sẽ xác định ở kiểm thử tích hợp.}
+  minimum_acceptance_level: DJANGO_POSTGRESQL_INTEGRATION
+  resolved_user_semantics: resolved_user là danh tính hiệu lực được lớp kiểm quyền chấp nhận, không đồng nghĩa giá
+    trị request.user nội bộ.
+  django_session_state_semantics:
+    AUTHENTICATED: Backend vẫn nạp được danh tính đã đăng nhập của phiên đối chứng.
+    INVALIDATED: 'Backend không còn nạp được danh tính đăng nhập từ mã phiên cũ: record bị xóa hoặc auth data đã
+      bị hủy. Chỉ binding REVOKED hoặc request DENY là chưa đủ.'
+    NO_AUTHENTICATED_SESSION: Không có phiên được cấp quyền đăng nhập; record anonymous còn tồn tại không tự làm
+      ca thất bại.
+  unknown_identity_policy: Catalog là allowlist danh tính của bộ ca; không JIT provisioning và không tự liên kết
+    theo email. Đây là chính sách lab đang thiết kế, không phải yêu cầu chung của OIDC.
+  step_context_override: login_context_override trên step thay login_context của ca cho đúng step đó; issuer_id/client_id
+    tham chiếu catalog.
+isolation:
+  reset_before_each_case: true
+  reset_before_each_variant: true
+  fixtures_are_deep_copied: true
+  use_real_vdt_data: false
+  description: Mỗi ca/biến thể bắt đầu từ fixture riêng, không dùng kết quả ca trước.
+preconditions: [Các phiên trong fixture chưa hết hạn; clock được kiểm soát., Tài nguyên kiểm tra yêu cầu phiên và
+    binding còn hiệu lực., 'User và issuer được đối chiếu bằng ExternalIdentity, không tự ghép theo email.', Ngữ
+    cảnh đăng nhập/thu hồi ghi là VERIFIED chỉ mô phỏng đầu ra đã xác minh. Bộ ca này không thực hiện xác minh chữ
+    ký/token; phần đó thuộc B và tích hợp.]
+catalog:
+  clients:
+  - {id: app-lab}
+  - {id: app-other}
+  issuers:
+  - {id: KC-A, value: 'https://auth.readiness.test:9443/realms/issuer-a'}
+  - {id: KC-B, value: 'https://auth.readiness.test:9443/realms/issuer-b'}
+  users:
+  - {id: U1, email: u1@example.test}
+  - {id: U2, email: u2@example.test}
+  external_identities:
+  - {issuer_id: KC-A, subject: SUB-A-U1, user_id: U1}
+  - {issuer_id: KC-A, subject: SUB-A-U2, user_id: U2}
+  - {issuer_id: KC-B, subject: SUB-B-U2, user_id: U2}
+  description: Hai issuer là dữ liệu logic giả định, chưa phải hai realm đã được dựng. Danh tính U2 ở hai issuer
+    được khai báo sẵn cho fixture, không minh họa tự động liên kết tài khoản bằng email. Mã issuer_id phải được
+    đối chiếu qua catalog. Hai client cũng là dữ liệu kiểm phạm vi, không phải yêu cầu dựng thêm client thật. Email
+    chỉ là thuộc tính đối chứng.
+fixture_sets:
+  identity_only:
+    groups: []
+    django_sessions: []
+    bindings: []
+    revocation_markers: []
+  anonymous_login:
+    groups: []
+    django_sessions:
+    - {session_ref: D-TEMP, state: ANONYMOUS, authenticated_user_id: null}
+    bindings: []
+    revocation_markers: []
+  active_sessions:
+    groups:
+    - {id: G01, issuer_id: KC-A, client_id: app-lab, subject: SUB-A-U1, sid: S01, state: ACTIVE}
+    - {id: G02, issuer_id: KC-A, client_id: app-lab, subject: SUB-A-U1, sid: S02, state: ACTIVE}
+    - {id: G03, issuer_id: KC-A, client_id: app-lab, subject: SUB-A-U2, sid: S03, state: ACTIVE}
+    - {id: G04, issuer_id: KC-B, client_id: app-lab, subject: SUB-B-U2, sid: S01, state: ACTIVE}
+    django_sessions:
+    - {session_ref: D01, state: AUTHENTICATED, authenticated_user_id: U1}
+    - {session_ref: D02, state: AUTHENTICATED, authenticated_user_id: U1}
+    - {session_ref: D03, state: AUTHENTICATED, authenticated_user_id: U1}
+    - {session_ref: D04, state: AUTHENTICATED, authenticated_user_id: U2}
+    - {session_ref: D05, state: AUTHENTICATED, authenticated_user_id: U2}
+    bindings:
+    - {id: B01, group_id: G01, django_session_ref: D01, state: ACTIVE}
+    - {id: B02, group_id: G01, django_session_ref: D02, state: ACTIVE}
+    - {id: B03, group_id: G02, django_session_ref: D03, state: ACTIVE}
+    - {id: B04, group_id: G03, django_session_ref: D04, state: ACTIVE}
+    - {id: B05, group_id: G04, django_session_ref: D05, state: ACTIVE}
+    revocation_markers: []
+  pending_callback:
+    groups:
+    - {id: G01, issuer_id: KC-A, client_id: app-lab, subject: SUB-A-U1, sid: S01, state: ACTIVE}
+    django_sessions:
+    - {session_ref: D-PENDING, state: ANONYMOUS, authenticated_user_id: null}
+    bindings: []
+    revocation_markers: []
+  orphan_session:
+    groups: []
+    django_sessions:
+    - {session_ref: D-ORPHAN, state: AUTHENTICATED, authenticated_user_id: U1}
+    bindings: []
+    revocation_markers: []
+  pending_callback_no_group:
+    groups: []
+    django_sessions:
+    - {session_ref: D-PENDING, state: ANONYMOUS, authenticated_user_id: null}
+    bindings: []
+    revocation_markers: []
+  revoked_sid_without_group:
+    groups: []
+    django_sessions:
+    - {session_ref: D-PENDING, state: ANONYMOUS, authenticated_user_id: null}
+    bindings: []
+    revocation_markers:
+    - id: M01
+      scope: SID
+      issuer_id: KC-A
+      client_id: app-lab
+      sid: S01
+      subject: SUB-A-U1
+      revoked_at: '2026-11-15T06:00:00+07:00'
+  cross_client_sessions:
+    groups:
+    - {id: G01, issuer_id: KC-A, client_id: app-lab, subject: SUB-A-U1, sid: S01, state: ACTIVE}
+    - {id: G02, issuer_id: KC-A, client_id: app-lab, subject: SUB-A-U1, sid: S02, state: ACTIVE}
+    - {id: G03, issuer_id: KC-A, client_id: app-lab, subject: SUB-A-U2, sid: S03, state: ACTIVE}
+    - {id: G04, issuer_id: KC-B, client_id: app-lab, subject: SUB-B-U2, sid: S01, state: ACTIVE}
+    - {id: G05, issuer_id: KC-A, client_id: app-other, subject: SUB-A-U1, sid: S01, state: ACTIVE}
+    - {id: G06, issuer_id: KC-A, client_id: app-other, subject: SUB-A-U1, sid: S02, state: ACTIVE}
+    django_sessions:
+    - {session_ref: D01, state: AUTHENTICATED, authenticated_user_id: U1}
+    - {session_ref: D02, state: AUTHENTICATED, authenticated_user_id: U1}
+    - {session_ref: D03, state: AUTHENTICATED, authenticated_user_id: U1}
+    - {session_ref: D04, state: AUTHENTICATED, authenticated_user_id: U2}
+    - {session_ref: D05, state: AUTHENTICATED, authenticated_user_id: U2}
+    - {session_ref: D06, state: AUTHENTICATED, authenticated_user_id: U1}
+    - {session_ref: D07, state: AUTHENTICATED, authenticated_user_id: U1}
+    bindings:
+    - {id: B01, group_id: G01, django_session_ref: D01, state: ACTIVE}
+    - {id: B02, group_id: G01, django_session_ref: D02, state: ACTIVE}
+    - {id: B03, group_id: G02, django_session_ref: D03, state: ACTIVE}
+    - {id: B04, group_id: G03, django_session_ref: D04, state: ACTIVE}
+    - {id: B05, group_id: G04, django_session_ref: D05, state: ACTIVE}
+    - {id: B06, group_id: G05, django_session_ref: D06, state: ACTIVE}
+    - {id: B07, group_id: G06, django_session_ref: D07, state: ACTIVE}
+    revocation_markers: []
+contexts:
+  verified_login_u1_without_sid: {verification: VERIFIED_STUB, issuer_id: KC-A, client_id: app-lab,
+    subject: SUB-A-U1, authentication_method: PASSWORD_PLUS_WEBAUTHN}
+  verified_login_u1_empty_sid: {verification: VERIFIED_STUB, issuer_id: KC-A, client_id: app-lab,
+    subject: SUB-A-U1, sid: '', authentication_method: PASSWORD_PLUS_WEBAUTHN}
+  verified_login_u2_s01: {verification: VERIFIED_STUB, issuer_id: KC-A, client_id: app-lab,
+    subject: SUB-A-U2, sid: S01, authentication_method: PASSWORD_PLUS_WEBAUTHN}
+  verified_revocation_u2_s01: {verification: VERIFIED_STUB, issuer_id: KC-A, client_id: app-lab,
+    subject: SUB-A-U2, sid: S01}
+  verified_login_u1_s01: {verification: VERIFIED_STUB, issuer_id: KC-A, client_id: app-lab, subject: SUB-A-U1, sid: S01,
+    authentication_method: PASSWORD_PLUS_WEBAUTHN}
+  verified_revocation_a_s01: {verification: VERIFIED_STUB, issuer_id: KC-A, client_id: app-lab, subject: SUB-A-U1,
+    sid: S01}
+  verified_login_u1_s02: {verification: VERIFIED_STUB, issuer_id: KC-A, client_id: app-lab, subject: SUB-A-U1, sid: S02,
+    authentication_method: PASSWORD_PLUS_WEBAUTHN}
+  verified_login_unknown_sub:
+    verification: VERIFIED_STUB
+    issuer_id: KC-B
+    client_id: app-lab
+    subject: SUB-B-U1
+    sid: S10
+    email_claim: u1@example.test
+    authentication_method: PASSWORD_PLUS_WEBAUTHN
+  verified_revocation_a_sub_u1: {verification: VERIFIED_STUB, issuer_id: KC-A, client_id: app-lab, subject: SUB-A-U1,
+    sid: null}
+evidence_policy:
+  permitted: ['Mã ca/biến thể, thời điểm và môi trường chạy.', Tham chiếu không bí mật của user/group/binding và
+      kết quả ALLOW/DENY., 'Kết quả so sánh key trước/sau, số binding, trạng thái thu hồi và thứ tự sự kiện.']
+  prohibited: ['Cookie, session_key thật, access/refresh/ID/logout token nguyên văn.', 'Mật khẩu, Windows PIN hoặc
+      khóa riêng.']
+  required_when_executed: [Phiên bản mã nguồn hoặc commit/hash., Expected và observed riêng biệt., Log đã loại bí
+      mật và giới hạn thực tế.]
+cases:
+- id: A1
+  title: Tạo liên kết đúng sau đăng nhập hợp lệ
+  fixture_set: identity_only
+  login_context: verified_login_u1_s01
+  steps:
+  - {order: 1, action: COMPLETE_VERIFIED_LOGIN, output_session_ref: D-NEW}
+  - order: 2
+    action: CHECK_PROTECTED_ACCESS
+    session_refs: [D-NEW]
+  expected:
+    new_group_count: 1
+    new_binding_count: 1
+    binding_matches: {issuer_id: KC-A, client_id: app-lab, subject: SUB-A-U1, sid: S01, user_id: U1, django_session_ref: D-NEW}
+    access: {D-NEW: ALLOW}
+    resolved_user: {D-NEW: U1}
+  evidence_required: [Kết quả đối chiếu các trường binding., Kết quả truy cập và user được nhận diện.]
+  execution:
+    status: NOT_RUN
+    observed: null
+    evidence: []
+    executed_at: null
+- id: A2
+  title: Binding dùng mã phiên sau rotation
+  fixture_set: anonymous_login
+  login_context: verified_login_u1_s01
+  steps:
+  - {order: 1, action: COMPLETE_VERIFIED_LOGIN_WITH_SESSION_ROTATION, input_session_ref: D-TEMP, output_session_ref: D-NEW}
+  - order: 2
+    action: CHECK_PROTECTED_ACCESS
+    session_refs: [D-TEMP, D-NEW]
+  expected:
+    session_key_rotated: true
+    active_binding_session_refs: [D-NEW]
+    active_binding_count_for_old_session: 0
+    access: {D-TEMP: DENY, D-NEW: ALLOW}
+    focus: 'Chống session fixation: so sánh key trước/sau và binding dùng key cuối cùng; DENY phiên anonymous riêng
+      lẻ chưa chứng minh rotation đúng.'
+  evidence_required: [So sánh nội bộ xác nhận key trước và sau khác nhau; không xuất key thật., Binding chỉ liên
+      kết phiên cuối cùng; kiểm quyền bằng phiên cũ/mới.]
+  execution:
+    status: NOT_RUN
+    observed: null
+    evidence: []
+    executed_at: null
+- id: A3
+  title: Thu hồi không lan sang phiên Keycloak khác của cùng user
+  fixture_set: active_sessions
+  revocation_context: verified_revocation_a_s01
+  steps:
+  - {action: REVOKE_VERIFIED_GROUP_AND_COMMIT, order: 1}
+  - action: CHECK_DJANGO_SESSION_STORAGE
+    session_refs: [D01, D02, D03, D04, D05]
+    order: 2
+  - action: CHECK_PROTECTED_ACCESS
+    session_refs: [D01, D02, D03, D04, D05]
+    order: 3
+  expected:
+    revoked_binding_ids: [B01, B02]
+    active_binding_ids: [B03, B04, B05]
+    access: {D01: DENY, D02: DENY, D03: ALLOW, D04: ALLOW, D05: ALLOW}
+    focus: D03 thuộc cùng U1 nhưng khác sid, phải tiếp tục truy cập được.
+    django_session_states: {D01: INVALIDATED, D02: INVALIDATED, D03: AUTHENTICATED, D04: AUTHENTICATED, D05: AUTHENTICATED}
+  evidence_required: ['Binding bị thu hồi, binding đối chứng và kết quả request sau commit.', Probe Django backend
+      bằng phiên cũ và kiểm danh tính phiên đối chứng; không chỉ kiểm binding REVOKED.]
+  execution:
+    status: PASS
+    observed:
+      before_http: {D01: 200, D02: 200, D03: 200, D04: 200, D05: 200}
+      django_session_states: {D01: INVALIDATED, D02: INVALIDATED, D03: AUTHENTICATED, D04: AUTHENTICATED, D05: AUTHENTICATED}
+      after_commit_http: {D01: 403, D02: 403, D03: 200, D04: 200, D05: 200}
+      probe_data_cleaned: true
+    evidence:
+    - 'Ảnh đầu ra PowerShell do người thực hiện cung cấp. Windows, Python 3.12.10, Django 5.2.19, PostgreSQL.'
+    - 'Script tmp/check_a3_a5.py. Source bundle SHA256 07864b1f30abb8a6eb74d444b276ef037b361d1d7a8e5728e659fcd82730449f.'
+    - 'Django service nhận ngữ cảnh đã xác minh. Hai issuer là dữ liệu giả định. Kiểm backend và /private/ sau commit.'
+    executed_at: '2026-11-16T17:27:17.242992+00:00'
+- id: A4
+  title: Thu hồi đầy đủ nhiều phiên Django thuộc một nhóm
+  fixture_set: active_sessions
+  revocation_context: verified_revocation_a_s01
+  steps:
+  - {action: REVOKE_VERIFIED_GROUP_AND_COMMIT, order: 1}
+  - action: CHECK_DJANGO_SESSION_STORAGE
+    session_refs: [D01, D02, D03, D04, D05]
+    order: 2
+  - action: CHECK_PROTECTED_ACCESS
+    session_refs: [D01, D02, D03, D04, D05]
+    order: 3
+  expected:
+    revoked_binding_ids: [B01, B02]
+    revoked_binding_count: 2
+    active_binding_count_in_target_group: 0
+    access: {D01: DENY, D02: DENY}
+    focus: Không dừng xử lý ở binding đầu tiên tìm thấy.
+    active_binding_ids: [B03, B04, B05]
+    django_session_states: {D01: INVALIDATED, D02: INVALIDATED, D03: AUTHENTICATED, D04: AUTHENTICATED, D05: AUTHENTICATED}
+  evidence_required: [Số binding bị thu hồi và kết quả truy cập riêng của D01/D02., Probe Django backend bằng phiên
+      cũ và kiểm danh tính phiên đối chứng; không chỉ kiểm binding REVOKED.]
+  execution:
+    status: PASS
+    observed:
+      before_http: {D01: 200, D02: 200, D03: 200, D04: 200, D05: 200}
+      django_session_states: {D01: INVALIDATED, D02: INVALIDATED, D03: AUTHENTICATED, D04: AUTHENTICATED, D05: AUTHENTICATED}
+      after_commit_http: {D01: 403, D02: 403, D03: 200, D04: 200, D05: 200}
+      probe_data_cleaned: true
+    evidence:
+    - 'Ảnh đầu ra PowerShell do người thực hiện cung cấp. Windows, Python 3.12.10, Django 5.2.19, PostgreSQL.'
+    - 'Script tmp/check_a3_a5.py. Source bundle SHA256 07864b1f30abb8a6eb74d444b276ef037b361d1d7a8e5728e659fcd82730449f.'
+    - 'Django service nhận ngữ cảnh đã xác minh. Hai issuer là dữ liệu giả định. Kiểm backend và /private/ sau commit.'
+    executed_at: '2026-11-16T17:27:17.848379+00:00'
+- id: A5
+  title: Không nhầm SID trùng giá trị giữa hai issuer
+  fixture_set: active_sessions
+  revocation_context: verified_revocation_a_s01
+  steps:
+  - {action: REVOKE_VERIFIED_GROUP_AND_COMMIT, order: 1}
+  - action: CHECK_DJANGO_SESSION_STORAGE
+    session_refs: [D01, D02, D03, D04, D05]
+    order: 2
+  - action: CHECK_PROTECTED_ACCESS
+    session_refs: [D01, D02, D03, D04, D05]
+    order: 3
+  expected:
+    revoked_binding_ids: [B01, B02]
+    access: {D01: DENY, D02: DENY, D05: ALLOW}
+    focus: G01/G04 cùng sid S01 nhưng khác issuer; không tìm kiếm chỉ bằng sid.
+    active_binding_ids: [B03, B04, B05]
+    django_session_states: {D01: INVALIDATED, D02: INVALIDATED, D03: AUTHENTICATED, D04: AUTHENTICATED, D05: AUTHENTICATED}
+  evidence_required: [Phạm vi issuer/client/sid đã dùng và kết quả phiên đối chứng KC-B., Probe Django backend bằng
+      phiên cũ và kiểm danh tính phiên đối chứng; không chỉ kiểm binding REVOKED.]
+  execution:
+    status: PASS
+    observed:
+      before_http: {D01: 200, D02: 200, D03: 200, D04: 200, D05: 200}
+      django_session_states: {D01: INVALIDATED, D02: INVALIDATED, D03: AUTHENTICATED, D04: AUTHENTICATED, D05: AUTHENTICATED}
+      after_commit_http: {D01: 403, D02: 403, D03: 200, D04: 200, D05: 200}
+      probe_data_cleaned: true
+    evidence:
+    - 'Ảnh đầu ra PowerShell do người thực hiện cung cấp. Windows, Python 3.12.10, Django 5.2.19, PostgreSQL.'
+    - 'Script tmp/check_a3_a5.py. Source bundle SHA256 07864b1f30abb8a6eb74d444b276ef037b361d1d7a8e5728e659fcd82730449f.'
+    - 'Django service nhận ngữ cảnh đã xác minh. Hai issuer là dữ liệu giả định. Kiểm backend và /private/ sau commit.'
+    executed_at: '2026-11-16T17:27:18.117595+00:00'
+- id: A6
+  title: Callback và logout đồng thời không làm hồi sinh phiên
+  fixture_set: pending_callback
+  login_context: verified_login_u1_s01
+  revocation_context: verified_revocation_a_s01
+  synchronization:
+    method: DETERMINISTIC_BARRIERS
+    description: Dừng actor trước khi lấy write guard/lock để điều khiển thứ tự commit; không giữ lock rồi chờ actor
+      cần chính lock đó.
+  variants:
+  - id: A6a
+    title: Callback commit trước, logout commit sau
+    steps:
+    - {order: 1, actor: CALLBACK, action: VERIFY_LOGIN_AND_PAUSE_BEFORE_SESSION_WRITE_GUARD}
+    - {order: 2, actor: LOGOUT, action: VERIFY_REVOCATION_AND_PAUSE_BEFORE_SESSION_WRITE_GUARD}
+    - {order: 3, actor: CALLBACK, action: CREATE_BINDING_AND_COMMIT, output_session_ref: D-NEW}
+    - {order: 4, actor: LOGOUT, action: REVOKE_VERIFIED_GROUP_AND_COMMIT}
+    - actor: PROBE
+      action: CHECK_DJANGO_SESSION_STORAGE
+      session_refs: [D-NEW]
+      order: 5
+    - order: 6
+      actor: REQUEST
+      action: CHECK_PROTECTED_ACCESS
+      session_refs: [D-PENDING, D-NEW]
+    expected:
+      group_state: REVOKED
+      active_binding_count_in_target_group: 0
+      new_session_binding_state: REVOKED
+      access: {D-PENDING: DENY, D-NEW: DENY}
+      django_session_states: {D-NEW: INVALIDATED}
+    execution:
+      status: NOT_RUN
+      observed: null
+      evidence: []
+      executed_at: null
+  - id: A6b
+    title: Logout commit trước, callback cũ ghi binding sau
+    steps:
+    - {order: 1, actor: CALLBACK, action: VERIFY_LOGIN_AND_PAUSE_BEFORE_SESSION_WRITE_GUARD}
+    - {order: 2, actor: LOGOUT, action: REVOKE_VERIFIED_GROUP_AND_COMMIT}
+    - {order: 3, actor: CALLBACK, action: ATTEMPT_BINDING_COMMIT_USING_OLD_LOGIN_CONTEXT, candidate_session_ref: D-CANDIDATE}
+    - actor: PROBE
+      action: CHECK_DJANGO_SESSION_STORAGE
+      session_refs: [D-CANDIDATE]
+      order: 4
+    - order: 5
+      actor: REQUEST
+      action: CHECK_PROTECTED_ACCESS
+      session_refs: [D-PENDING, D-CANDIDATE]
+    expected:
+      callback_authorization_outcome: REJECTED
+      group_state: REVOKED
+      active_binding_count_in_target_group: 0
+      revocation_marker_preserved: true
+      authenticated_session_issued: false
+      access: {D-PENDING: DENY, D-CANDIDATE: DENY}
+      django_session_states: {D-CANDIDATE: NO_AUTHENTICATED_SESSION}
+    execution:
+      status: NOT_RUN
+      observed: null
+      evidence: []
+      executed_at: null
+  evidence_required: ['Thứ tự barrier/commit của hai actor, có thời điểm và trạng thái cuối.', Kết quả request mới
+      bằng phiên cũ hoặc phiên ứng viên., Chạy concurrency bằng giao dịch độc lập khi có implementation/database.,
+    'PostgreSQL, TransactionTestCase hoặc tương đương; connection độc lập, không phải TestCase/SQLite hoặc chỉ chạy
+      tuần tự.']
+  execution: {status_rule: DERIVED_FROM_VARIANTS}
+  requires_concurrency: true
+- id: A7
+  title: Thu hồi lặp không đổi kết quả hoặc mở lại phiên
+  fixture_set: active_sessions
+  revocation_context: verified_revocation_a_s01
+  boundary: Kiểm idempotency logic thu hồi cùng phạm vi; chưa kiểm chống replay JWT bằng jti của endpoint B.
+  steps:
+  - {action: REVOKE_VERIFIED_GROUP_AND_COMMIT, order: 1}
+  - {action: CAPTURE_REVOCATION_STATE, order: 2}
+  - {action: REVOKE_VERIFIED_GROUP_AND_COMMIT, order: 3}
+  - action: CHECK_DJANGO_SESSION_STORAGE
+    session_refs: [D01, D02, D03, D04, D05]
+    order: 4
+  - action: CHECK_PROTECTED_ACCESS
+    session_refs: [D01, D02, D03, D04, D05]
+    order: 5
+  expected:
+    second_revocation_outcome: NOOP_NO_ERROR
+    revoked_binding_ids: [B01, B02]
+    active_binding_ids: [B03, B04, B05]
+    revoked_at_unchanged_by_second_call: true
+    django_session_states: {D01: INVALIDATED, D02: INVALIDATED, D03: AUTHENTICATED, D04: AUTHENTICATED, D05: AUTHENTICATED}
+    access: {D01: DENY, D02: DENY, D03: ALLOW, D04: ALLOW, D05: ALLOW}
+  evidence_required: ['Kết quả hai lần, mốc thu hồi trước/sau, backend probes và request mới.', Hai mốc now khác
+      nhau nhưng revoked_at của lần đầu vẫn được giữ sau lần hai.]
+  execution:
+    status: PASS
+    observed:
+      before_http: {D01: 200, D02: 200, D03: 200, D04: 200, D05: 200}
+      django_session_states: {D01: INVALIDATED, D02: INVALIDATED, D03: AUTHENTICATED, D04: AUTHENTICATED, D05: AUTHENTICATED}
+      after_commit_http: {D01: 403, D02: 403, D03: 200, D04: 200, D05: 200}
+      probe_data_cleaned: true
+      first_revoked_at: '2026-11-16T17:46:28.064730+00:00'
+      second_call_at: '2026-11-16T17:46:28.083083+00:00'
+      second_revocation_outcome: NOOP_NO_ERROR
+      revoked_at_unchanged_by_second_call: true
+    evidence:
+    - 'Ảnh đầu ra PowerShell do người thực hiện cung cấp. Windows, Python 3.12.10, Django 5.2.19, PostgreSQL.'
+    - 'Script tmp/check_a7.py. Source bundle SHA256 2d1b9bb385669b484f29ff64feeabc894350924c8e02efc9795b466d247f62e8.'
+    - 'Django service nhận ngữ cảnh đã xác minh. Hai issuer là dữ liệu giả định. Kiểm backend và /private/ sau commit.'
+    executed_at: '2026-11-16T17:46:27.615787+00:00'
+  clock_requirement: Giá trị now mà lần thu hồi thứ hai quan sát phải muộn hơn lần đầu; ghi hai mốc riêng để bắt
+    lỗi ghi đè revoked_at. Không để hai lần dùng cùng một frozen timestamp.
+- id: A8
+  title: Thu hồi theo sub khi không có sid
+  fixture_set: active_sessions
+  revocation_context: verified_revocation_a_sub_u1
+  open_question: Chưa chốt cutoff/auth_time, clock skew và quy tắc đăng nhập lại sau thu hồi theo sub. Ca này chỉ
+    xác nhận phạm vi các phiên đã tồn tại.
+  steps:
+  - {action: REVOKE_VERIFIED_SUBJECT_AND_COMMIT, order: 1}
+  - action: CHECK_DJANGO_SESSION_STORAGE
+    session_refs: [D01, D02, D03, D04, D05]
+    order: 2
+  - action: CHECK_PROTECTED_ACCESS
+    session_refs: [D01, D02, D03, D04, D05]
+    order: 3
+  expected:
+    revoked_binding_ids: [B01, B02, B03]
+    active_binding_ids: [B04, B05]
+    django_session_states: {D01: INVALIDATED, D02: INVALIDATED, D03: INVALIDATED, D04: AUTHENTICATED, D05: AUTHENTICATED}
+    access: {D01: DENY, D02: DENY, D03: DENY, D04: ALLOW, D05: ALLOW}
+  evidence_required: ['Phạm vi issuer/client/sub, trạng thái backend và kết quả các phiên đối chứng.']
+  execution:
+    status: NOT_RUN
+    observed: null
+    evidence: []
+    executed_at: null
+- id: A9
+  title: Marker độc lập ngăn callback khi group chưa tồn tại
+  fixture_set: pending_callback_no_group
+  login_context: verified_login_u1_s01
+  revocation_context: verified_revocation_a_s01
+  variants:
+  - id: A9a
+    title: Logout tạo marker trước lần tạo group đầu tiên
+    requires_concurrency: true
+    synchronization: {method: DETERMINISTIC_BARRIERS, placement: BEFORE_SESSION_WRITE_GUARD}
+    steps:
+    - {actor: CALLBACK, action: VERIFY_LOGIN_AND_PAUSE_BEFORE_SESSION_WRITE_GUARD, order: 1}
+    - {actor: PROBE, action: ASSERT_TARGET_GROUP_ABSENT, order: 2}
+    - {actor: LOGOUT, action: REVOKE_VERIFIED_GROUP_AND_COMMIT, order: 3}
+    - {actor: PROBE, action: CHECK_PERSISTED_REVOCATION_MARKER_WITHOUT_GROUP, order: 4}
+    - {actor: CALLBACK, action: ATTEMPT_BINDING_COMMIT_USING_OLD_LOGIN_CONTEXT, candidate_session_ref: D-CANDIDATE,
+      order: 5}
+    - actor: REQUEST
+      action: CHECK_PROTECTED_ACCESS
+      session_refs: [D-PENDING, D-CANDIDATE]
+      order: 6
+    - {actor: CALLBACK, action: COMPLETE_VERIFIED_LOGIN, login_context_override: verified_login_u1_s02, output_session_ref: D-NEW-S02,
+      order: 7}
+    - actor: PROBE
+      action: CHECK_DJANGO_SESSION_STORAGE
+      session_refs: [D-CANDIDATE, D-NEW-S02]
+      order: 8
+    - actor: REQUEST
+      action: CHECK_PROTECTED_ACCESS
+      session_refs: [D-NEW-S02]
+      order: 9
+    expected:
+      active_group_count_for_revoked_sid: 0
+      authenticated_session_issued_for_s01: false
+      required_revocation_markers:
+      - {scope: SID, issuer_id: KC-A, client_id: app-lab, sid: S01}
+      django_session_states: {D-CANDIDATE: NO_AUTHENTICATED_SESSION, D-NEW-S02: AUTHENTICATED}
+      access: {D-PENDING: DENY, D-CANDIDATE: DENY, D-NEW-S02: ALLOW}
+      revocation_marker_created_without_group: true
+      old_callback_authorization_outcome: REJECTED
+      new_sid_login_outcome: ACCEPTED
+    execution:
+      status: NOT_RUN
+      observed: null
+      evidence: []
+      executed_at: null
+  - id: A9b
+    title: Marker đã lưu từ trước chặn tạo group sau đó
+    fixture_set: revoked_sid_without_group
+    requires_concurrency: false
+    steps:
+    - {action: ASSERT_TARGET_GROUP_ABSENT, order: 1}
+    - {action: COMPLETE_VERIFIED_LOGIN, output_session_ref: D-CANDIDATE, order: 2}
+    - action: CHECK_PROTECTED_ACCESS
+      session_refs: [D-PENDING, D-CANDIDATE]
+      order: 3
+    - {actor: CALLBACK, action: COMPLETE_VERIFIED_LOGIN, login_context_override: verified_login_u1_s02, output_session_ref: D-NEW-S02,
+      order: 4}
+    - actor: PROBE
+      action: CHECK_DJANGO_SESSION_STORAGE
+      session_refs: [D-CANDIDATE, D-NEW-S02]
+      order: 5
+    - actor: REQUEST
+      action: CHECK_PROTECTED_ACCESS
+      session_refs: [D-NEW-S02]
+      order: 6
+    expected:
+      active_group_count_for_revoked_sid: 0
+      authenticated_session_issued_for_s01: false
+      required_revocation_markers:
+      - {scope: SID, issuer_id: KC-A, client_id: app-lab, sid: S01}
+      django_session_states: {D-CANDIDATE: NO_AUTHENTICATED_SESSION, D-NEW-S02: AUTHENTICATED}
+      access: {D-PENDING: DENY, D-CANDIDATE: DENY, D-NEW-S02: ALLOW}
+      revocation_marker_preserved: true
+      old_callback_authorization_outcome: REJECTED
+      new_sid_login_outcome: ACCEPTED
+    execution:
+      status: NOT_RUN
+      observed: null
+      evidence: []
+      executed_at: null
+  evidence_required: ['Marker lưu được khi không có group, trace của callback/logout và backend probes.', Biến thể
+      concurrency chạy PostgreSQL với giao dịch/connection độc lập.]
+  execution: {status_rule: DERIVED_FROM_VARIANTS}
+- id: A10
+  title: Phiên đã authenticated nhưng thiếu binding phải bị từ chối
+  fixture_set: orphan_session
+  steps:
+  - action: CHECK_PROTECTED_ACCESS
+    session_refs: [D-ORPHAN]
+    order: 1
+  expected:
+    access: {D-ORPHAN: DENY}
+    resolved_user: {D-ORPHAN: null}
+    local_password_fallback_used: false
+  evidence_required: ['Chứng minh phiên đầu vào đã authenticated, không có binding và route vẫn từ chối.']
+  execution:
+    status: PASS
+    observed:
+      input_authenticated: true
+      input_binding_exists: false
+      access: {D-ORPHAN: DENY}
+      resolved_user: {D-ORPHAN: null}
+      orphan_http: 403
+      valid_control_http: 200
+      local_password_fallback_used: false
+      probe_data_cleaned: true
+    evidence:
+    - 'Assistant-run PostgreSQL test: docs/validation/a10-2026-11-18/results.json and report.md; source hashes recorded.'
+    - 'tmp/check_a10.py: authenticated orphan rejected, valid bound control accepted; bypass-binding and deny-all faults detected in memory.'
+    - 'Django test client and force_login fixture; no real Keycloak/password/HTTPS flow. resolved_user null denotes no authorized route identity, not anonymous backend state.'
+    executed_at: '2026-11-18T10:28:42.671056+00:00'
+- id: A11
+  title: Binding thứ hai trở đi dùng lại group đang có
+  fixture_set: active_sessions
+  login_context: verified_login_u1_s01
+  steps:
+  - {action: COMPLETE_VERIFIED_LOGIN, output_session_ref: D-NEW, order: 1}
+  - action: CHECK_PROTECTED_ACCESS
+    session_refs: [D-NEW, D01, D02]
+    order: 2
+  expected:
+    new_group_count: 0
+    new_binding_count: 1
+    binding_matches: {group_id: G01, user_id: U1, django_session_ref: D-NEW}
+    group_count_for_target_scope: 1
+    active_binding_count_in_target_group: 3
+    preexisting_active_binding_ids: [B01, B02, B03, B04, B05]
+    access: {D-NEW: ALLOW, D01: ALLOW, D02: ALLOW}
+  evidence_required: [Group/binding trước và sau; G01 đã có B01/B02 trước lần đăng nhập này.]
+  execution:
+    status: PASS
+    observed:
+      initial_active_binding_count_in_target_group: 2
+      new_group_count: 0
+      new_binding_count: 1
+      binding_matches: {group_id: G01, user_id: U1, django_session_ref: D-NEW}
+      group_count_for_target_scope: 1
+      active_binding_count_in_target_group: 3
+      preexisting_active_binding_ids: [B01, B02, B03, B04, B05]
+      original_groups_bindings_sessions_markers_preserved: true
+      after_commit_http: {D01: 200, D02: 200, D03: 200, D04: 200, D05: 200, D-NEW: 200}
+      backend_users_match: true
+      new_login_commit_returned_at: '2026-11-17T12:57:20.402540+00:00'
+      probe_data_cleaned: true
+    evidence:
+    - 'User-supplied PowerShell screenshot. Windows, Python 3.12.10, Django 5.2.19, PostgreSQL.'
+    - 'tmp/check_a11.py; source bundle SHA256 d0ba731df72ec0fa3221943b6b583550b794e4253e0002d60c1508b32c8a1e42. Current files match the screenshot hash.'
+    - 'Verified-login service, database sessions, protected route after commit. Two logical issuers selected using override_settings.'
+    executed_at: '2026-11-17T12:57:18.999621+00:00'
+- id: A12
+  title: Từ chối danh tính lạ dù email trùng tài khoản có sẵn
+  fixture_set: identity_only
+  login_context: verified_login_unknown_sub
+  steps:
+  - {action: COMPLETE_VERIFIED_LOGIN, output_session_ref: D-CANDIDATE, order: 1}
+  - action: CHECK_PROTECTED_ACCESS
+    session_refs: [D-CANDIDATE]
+    order: 2
+  expected:
+    lab_policy:
+      login_outcome: REJECTED
+      new_user_count: 0
+      new_external_identity_count: 0
+    security_invariants:
+      linked_to_existing_user_by_email: false
+      existing_user_ids_unchanged: [U1, U2]
+      new_group_count: 0
+      new_binding_count: 0
+      authenticated_session_issued: false
+      access: {D-CANDIDATE: DENY}
+      resolved_user: {D-CANDIDATE: null}
+  evidence_required: [Email claim trùng U1 đã có trong catalog nhưng không liên kết hoặc tạo user/identity/group/binding.]
+  execution:
+    status: NOT_RUN
+    observed: null
+    evidence: []
+    executed_at: null
+- id: A13
+  title: Thu hồi không vượt phạm vi client
+  fixture_set: cross_client_sessions
+  variants:
+  - id: A13a
+    title: Thu hồi theo sid không ảnh hưởng client khác
+    revocation_context: verified_revocation_a_s01
+    steps:
+    - {action: REVOKE_VERIFIED_GROUP_AND_COMMIT, order: 1}
+    - action: CHECK_DJANGO_SESSION_STORAGE
+      session_refs: [D01, D02, D03, D04, D05, D06, D07]
+      order: 2
+    - action: CHECK_PROTECTED_ACCESS
+      session_refs: [D01, D02, D03, D04, D05, D06, D07]
+      order: 3
+    expected:
+      revoked_binding_ids: [B01, B02]
+      active_binding_ids: [B03, B04, B05, B06, B07]
+      django_session_states:
+        D01: INVALIDATED
+        D02: INVALIDATED
+        D03: AUTHENTICATED
+        D04: AUTHENTICATED
+        D05: AUTHENTICATED
+        D06: AUTHENTICATED
+        D07: AUTHENTICATED
+      access:
+        D01: DENY
+        D02: DENY
+        D03: ALLOW
+        D04: ALLOW
+        D05: ALLOW
+        D06: ALLOW
+        D07: ALLOW
+    execution:
+      status: NOT_RUN
+      observed: null
+      evidence: []
+      executed_at: null
+  - id: A13b
+    title: Thu hồi theo sub không ảnh hưởng client khác
+    revocation_context: verified_revocation_a_sub_u1
+    steps:
+    - {action: REVOKE_VERIFIED_SUBJECT_AND_COMMIT, order: 1}
+    - action: CHECK_DJANGO_SESSION_STORAGE
+      session_refs: [D01, D02, D03, D04, D05, D06, D07]
+      order: 2
+    - action: CHECK_PROTECTED_ACCESS
+      session_refs: [D01, D02, D03, D04, D05, D06, D07]
+      order: 3
+    expected:
+      revoked_binding_ids: [B01, B02, B03]
+      active_binding_ids: [B04, B05, B06, B07]
+      django_session_states:
+        D01: INVALIDATED
+        D02: INVALIDATED
+        D03: INVALIDATED
+        D04: AUTHENTICATED
+        D05: AUTHENTICATED
+        D06: AUTHENTICATED
+        D07: AUTHENTICATED
+      access:
+        D01: DENY
+        D02: DENY
+        D03: DENY
+        D04: ALLOW
+        D05: ALLOW
+        D06: ALLOW
+        D07: ALLOW
+    execution:
+      status: NOT_RUN
+      observed: null
+      evidence: []
+      executed_at: null
+  evidence_required: ['Đối chiếu app-lab/app-other với cùng issuer, user và giá trị sid; backend và request đối
+      chứng.']
+  execution: {status_rule: DERIVED_FROM_VARIANTS}
+- id: A14
+  title: Callback thiếu sid hoặc nhận sid là chuỗi rỗng
+  fixture_set: identity_only
+  login_context: verified_login_u1_without_sid
+  steps:
+  - {order: 1, action: COMPLETE_VERIFIED_LOGIN, output_session_ref: D-MISSING}
+  - {order: 2, action: COMPLETE_VERIFIED_LOGIN, login_context_override: verified_login_u1_empty_sid, output_session_ref: D-EMPTY}
+  - {order: 3, action: CHECK_DJANGO_SESSION_STORAGE, session_refs: [D-MISSING, D-EMPTY]}
+  - {order: 4, action: CHECK_PROTECTED_ACCESS, session_refs: [D-MISSING, D-EMPTY]}
+  expected:
+    login_outcome_by_session: {D-MISSING: REJECTED, D-EMPTY: REJECTED}
+    new_group_count: 0
+    new_binding_count: 0
+    django_session_states: {D-MISSING: NO_AUTHENTICATED_SESSION, D-EMPTY: NO_AUTHENTICATED_SESSION}
+    access: {D-MISSING: DENY, D-EMPTY: DENY}
+  evidence_required: [Ghi kết quả riêng cho từng callback của U1 và đếm group/binding sau mỗi lần thử.]
+  execution:
+    status: PASS
+    observed:
+      D-MISSING:
+        validation_error: MissingClaimError
+        callback_http: 400
+        new_group_count: 0
+        new_binding_count: 0
+        django_session_state: NO_AUTHENTICATED_SESSION
+        protected_http: 403
+      D-EMPTY:
+        validation_error: InvalidClaimError
+        callback_http: 400
+        new_group_count: 0
+        new_binding_count: 0
+        django_session_state: NO_AUTHENTICATED_SESSION
+        protected_http: 403
+      valid_control: {callback_http: 302, protected_http: 200, backend_user_matches: true}
+      rejected_sessions_remain_denied_after_control: true
+      probe_data_cleaned: true
+    evidence:
+    - 'User-supplied PowerShell screenshot. Windows, Python 3.12.10, Django 5.2.19, PostgreSQL.'
+    - 'tmp/check_a14.py; source bundle SHA256 90bce6f080afe6382fcd39db6d9d5d7c0d255a605232f25372373cad369ab983. Current files match the screenshot hash.'
+    - 'Real Django callback, Authlib JWT signature and claim validation, database sessions, protected route. Token exchange, metadata and JWKS responses are mocked with a synthetic RSA key.'
+    executed_at: '2026-11-17T15:16:47.816477+00:00'
+- id: A15
+  title: Callback của U2 dùng sid đã thuộc U1
+  fixture_set: active_sessions
+  login_context: verified_login_u2_s01
+  steps:
+  - {order: 1, action: COMPLETE_VERIFIED_LOGIN, output_session_ref: D-CANDIDATE}
+  - {order: 2, action: CHECK_DJANGO_SESSION_STORAGE, session_refs: [D-CANDIDATE, D01, D02, D04]}
+  - {order: 3, action: CHECK_PROTECTED_ACCESS, session_refs: [D-CANDIDATE, D01, D02, D04]}
+  expected:
+    login_outcome: REJECTED
+    group_subject: {G01: SUB-A-U1}
+    groups_unchanged: true
+    bindings_unchanged: true
+    revocation_markers_unchanged: true
+    django_session_states: {D-CANDIDATE: NO_AUTHENTICATED_SESSION, D01: AUTHENTICATED, D02: AUTHENTICATED, D04: AUTHENTICATED}
+    access: {D-CANDIDATE: DENY, D01: ALLOW, D02: ALLOW, D04: ALLOW}
+    resolved_user: {D-CANDIDATE: null, D01: U1, D02: U1, D04: U2}
+  evidence_required: [Đối chiếu chủ G01 và toàn bộ group/binding/marker trước và sau callback., Kiểm danh tính hiệu lực của hai phiên G01 và phiên riêng của U2.]
+  execution:
+    status: PASS
+    observed:
+      login_outcome: REJECTED
+      jwt_validated_and_session_service_called: true
+      callback_http: 403
+      group_subject: {G01: SUB-A-U1}
+      groups_unchanged: true
+      bindings_unchanged: true
+      revocation_markers_unchanged: true
+      original_backend_sessions_preserved: true
+      django_session_states: {D-CANDIDATE: NO_AUTHENTICATED_SESSION, D01: AUTHENTICATED, D02: AUTHENTICATED, D03: AUTHENTICATED, D04: AUTHENTICATED, D05: AUTHENTICATED}
+      after_callback_http: {D-CANDIDATE: 403, D01: 200, D02: 200, D03: 200, D04: 200, D05: 200}
+      resolved_user: {D-CANDIDATE: null, D01: U1, D02: U1, D03: U1, D04: U2, D05: U2}
+      probe_data_cleaned: true
+    evidence:
+    - 'User-supplied PowerShell screenshot. Windows, Python 3.12.10, Django 5.2.19, PostgreSQL.'
+    - 'tmp/check_a15.py; source bundle SHA256 c3c14e2f581632f987123dbc324f299889495b2ecbb7ca2fb52e056e9cd0dc88. Current files match the screenshot hash.'
+    - 'Real callback, JWT signature/claim validation and session service. Token exchange, metadata and JWKS are mocked with a synthetic RSA key. Secondary issuer is logical test data.'
+    executed_at: '2026-11-17T17:02:36.086058+00:00'
+- id: A16
+  title: Logout nêu sid của G01 và subject của U2
+  fixture_set: active_sessions
+  revocation_context: verified_revocation_u2_s01
+  steps:
+  - {order: 1, action: REVOKE_VERIFIED_GROUP_AND_COMMIT}
+  - {order: 2, action: CHECK_DJANGO_SESSION_STORAGE, session_refs: [D01, D02, D03, D04, D05]}
+  - {order: 3, action: CHECK_PROTECTED_ACCESS, session_refs: [D01, D02, D03, D04, D05]}
+  expected:
+    revocation_outcome: REJECTED
+    groups_unchanged: true
+    bindings_unchanged: true
+    revocation_markers_unchanged: true
+    django_session_states: {D01: AUTHENTICATED, D02: AUTHENTICATED, D03: AUTHENTICATED, D04: AUTHENTICATED, D05: AUTHENTICATED}
+    access: {D01: ALLOW, D02: ALLOW, D03: ALLOW, D04: ALLOW, D05: ALLOW}
+    resolved_user: {D01: U1, D02: U1, D03: U1, D04: U2, D05: U2}
+  evidence_required:
+  - So sánh toàn bộ group/binding/marker ngay sau thử thu hồi với fixture ban đầu.
+  - Kiểm phiên G01 và phiên D04 của U2 để bắt cả thu hồi nhầm theo sid lẫn chuyển sang thu hồi theo sub.
+  execution:
+    status: PASS
+    observed:
+      revocation_outcome: REJECTED
+      jwt_validated_and_real_service_called: true
+      endpoint_http: 400
+      group_subject: {G01: SUB-A-U1}
+      groups_unchanged: true
+      bindings_unchanged: true
+      revocation_markers_unchanged: true
+      receipts_unchanged: true
+      original_backend_sessions_preserved: true
+      after_logout_http: {D01: 200, D02: 200, D03: 200, D04: 200, D05: 200}
+      resolved_user: {D01: U1, D02: U1, D03: U1, D04: U2, D05: U2}
+      probe_data_cleaned: true
+    evidence:
+    - 'User-supplied PowerShell screenshot. Windows, Python 3.12.10, Django 5.2.19, PostgreSQL.'
+    - 'tmp/check_a16.py; source bundle SHA256 9a664982ea18db569ddc685851d553111b788d057733993c05b73e6159787ad9. Current files match screenshot hash.'
+    - 'Real backchannel endpoint, JWT validation and revocation service. JWKS response is mocked with a synthetic RSA key. Secondary issuer is logical test data.'
+    - 'Additional assistant-run reliability audit: docs/validation/a16-reliability-2026-11-18/report.md and results.json; original baseline reproduced on local PostgreSQL.'
+    - 'A16 catches removed ownership guard and persisted state corruption. Reject-all mutant survives original A16; added positive control in tmp/audit_a16_reliability.py catches it. Other cases not mutation-audited.'
+    executed_at: '2026-11-17T17:09:45.731950+00:00'
+limitations: [Đã ghi kết quả chạy riêng cho A3/A4/A5/A7/A11/A14/A15/A16., A3/A4/A5 dùng cùng fixture nhưng kiểm
+    các lỗi khác nhau; không suy từ một ca rằng các ca khác đã đạt., Nhiều tab trình duyệt không mặc nhiên là nhiều
+    phiên Django; phải quan sát cookie/session thực tế ở integration., Một request đã hoàn thành trước thu hồi không
+    thể được hoàn tác chỉ bằng logout., Đạt các ca logic không đồng nghĩa toàn bộ vấn đề A hoặc các vấn đề B/C/D
+    đã được nghiệm thu., 'A6/A9a chỉ có bằng chứng race khi có PostgreSQL thật, connection/giao dịch độc lập và
+    barrier/commit trace. TransactionTestCase là nền, không tự tạo concurrency.', A9b kiểm marker đã lưu; một lần
+    chạy tuần tự ca này không thay bằng chứng concurrency của A9a., A8/A13b chưa chứng minh đăng nhập lại an toàn
+    sau subject-wide logout; cutoff và phục hồi còn OPEN., A11 kiểm dùng lại group đã tồn tại; cạnh tranh tạo đồng
+    thời hai group mới còn cần ca riêng khi chốt cơ chế đồng bộ., Việc định nghĩa fixture/expected không phải kết
+    quả thực thi. Không kết luận đã hết lỗi hoặc đã nghiệm thu A.]
+updated_on: '2026-11-18'
+execution: {status_rule: DERIVED_FROM_CASES}
+execution_aggregation:
+  leaf_statuses: [NOT_RUN, IN_PROGRESS, PASS, FAIL, BLOCKED]
+  rule_precedence:
+  - {when: ANY_CHILD_FAIL, result: FAIL}
+  - {when: ANY_CHILD_IN_PROGRESS, result: IN_PROGRESS}
+  - {when: ANY_CHILD_BLOCKED, result: BLOCKED}
+  - {when: ALL_CHILDREN_PASS, result: PASS}
+  - {when: ALL_CHILDREN_NOT_RUN, result: NOT_RUN}
+  - {when: OTHER_MIX_OF_PASS_AND_NOT_RUN, result: IN_PROGRESS}
+  parent_policy: Trạng thái suite/ca có variants được suy ra đệ quy; không lưu status, observed hoặc executed_at
+    độc lập tại cha.
+concurrency_requirements:
+  database: PostgreSQL
+  harness: Django TransactionTestCase hoặc tương đương có real commit/rollback
+  independent_connections_per_actor: true
+  minimum_connections: 2
+  deterministic_barriers: true
+  barrier_placement: Dừng actor trước khi lấy write guard/lock để điều khiển thứ tự commit; không giữ lock rồi chờ
+    actor cần chính lock đó.
+  not_proof: [TestCase bọc transaction ngoài, SQLite, Một connection chạy tuần tự, Chỉ đổi thứ tự list bước, Sleep/bấm
+      nhanh]
+  storage_probe: Đọc lại từ database/session backend sau commit; không dùng object/cache cũ để kết luận.
+  required_evidence: ['Database vendor, isolation và transaction boundaries', 'Connection/actor khác nhau, barrier
+      và commit trace', Backend session probe và request mới sau thu hồi]
+
+reliability_audit:
+  report: ../../docs/validation/remaining-reliability-2026-11-18/report.md
+  cases: [A3, A4, A5, A7, A11, A14, A15]
+  baseline_passes: 7
+  targeted_faults_detected: 7
+  additional_survivor: A15 rejects every callback after fixture setup; pair with A14 valid callback control.
+  limitation: Selected in-memory faults only; not exhaustive coverage or acceptance of remaining cases.

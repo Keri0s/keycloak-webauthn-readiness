@@ -1,0 +1,13 @@
+{
+    auto_https disable_redirects
+}
+
+https://auth.readiness.test:9443 {
+    tls internal
+    reverse_proxy keycloak:8080
+}
+
+https://app.readiness.test:9443 {
+    tls internal
+    reverse_proxy host.docker.internal:18000
+}

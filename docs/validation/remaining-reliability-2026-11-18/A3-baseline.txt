@@ -1,0 +1,27 @@
+Python=3.12.10 Django=5.2.19
+Database=postgresql
+Source bundle SHA256=7e174327fbef35eaaec295e25ef69b00085cdc7a8e153311fea9b809d7d12ebe
+Scope: verified-login service, PostgreSQL session backend, /private/
+
+A3 started_at=2026-11-17T17:40:57.998836+00:00
+Before revocation: all 5 sessions authenticated, HTTP 200
+Revocation COMMIT returned at 2026-11-17T17:40:58.258609+00:00
+D01 expected=INVALIDATED/403 observed=INVALIDATED/403
+D02 expected=INVALIDATED/403 observed=INVALIDATED/403
+D03 expected=AUTHENTICATED/200 observed=AUTHENTICATED/200
+D04 expected=AUTHENTICATED/200 observed=AUTHENTICATED/200
+D05 expected=AUTHENTICATED/200 observed=AUTHENTICATED/200
+A3: PASS
+A3: probe data cleaned
+
+All A3/A4/A5 cases passed: OK
+
+{
+  "case": "A3",
+  "variant": "baseline",
+  "observed": "PASS",
+  "exception": null,
+  "failure_line": null,
+  "cleanup_assertions_completed": true,
+  "experiment_expected": true
+}
