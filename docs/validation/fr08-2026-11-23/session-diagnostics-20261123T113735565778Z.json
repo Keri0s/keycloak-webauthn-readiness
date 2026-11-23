@@ -1,0 +1,116 @@
+{
+  "at_utc": "2026-11-23T11:37:35.565778+00:00",
+  "read_only": true,
+  "invalid_rows": [
+    {
+      "error_type": "BadSignature",
+      "encoded_length": 611,
+      "colon_count": 2,
+      "expired": false,
+      "expires_at": "2026-11-30T14:48:03.718844+00:00",
+      "has_binding": false,
+      "binding_created_at": null,
+      "binding_expired": null,
+      "binding_revoked": false,
+      "group_revoked": false,
+      "empty_string": false,
+      "literal_empty_json_object": false,
+      "unsigned_json_type": null,
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      }
+    },
+    {
+      "error_type": "BadSignature",
+      "encoded_length": 275,
+      "colon_count": 2,
+      "expired": true,
+      "expires_at": "2026-11-16T16:55:14.138476+00:00",
+      "has_binding": true,
+      "binding_created_at": "2026-11-16T16:40:14.147993+00:00",
+      "binding_expired": true,
+      "binding_revoked": false,
+      "group_revoked": false,
+      "empty_string": false,
+      "literal_empty_json_object": false,
+      "unsigned_json_type": null,
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      }
+    },
+    {
+      "error_type": "BadSignature",
+      "encoded_length": 264,
+      "colon_count": 2,
+      "expired": true,
+      "expires_at": "2026-11-16T14:42:54.662526+00:00",
+      "has_binding": false,
+      "binding_created_at": null,
+      "binding_expired": null,
+      "binding_revoked": false,
+      "group_revoked": false,
+      "empty_string": false,
+      "literal_empty_json_object": false,
+      "unsigned_json_type": null,
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      }
+    },
+    {
+      "error_type": "BadSignature",
+      "encoded_length": 786,
+      "colon_count": 2,
+      "expired": true,
+      "expires_at": "2026-11-16T14:32:14.388894+00:00",
+      "has_binding": true,
+      "binding_created_at": "2026-11-16T14:17:14.402892+00:00",
+      "binding_expired": true,
+      "binding_revoked": false,
+      "group_revoked": false,
+      "empty_string": false,
+      "literal_empty_json_object": false,
+      "unsigned_json_type": null,
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      }
+    },
+    {
+      "error_type": "BadSignature",
+      "encoded_length": 276,
+      "colon_count": 2,
+      "expired": true,
+      "expires_at": "2026-11-16T12:26:50.765016+00:00",
+      "has_binding": true,
+      "binding_created_at": "2026-11-16T12:11:50.774451+00:00",
+      "binding_expired": true,
+      "binding_revoked": false,
+      "group_revoked": false,
+      "empty_string": false,
+      "literal_empty_json_object": false,
+      "unsigned_json_type": null,
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      }
+    }
+  ],
+  "total_rows": 21,
+  "scanned_rows": 21,
+  "counts": {
+    "verified_rows": 16,
+    "invalid_rows": 5
+  },
+  "limitations": [
+    "Unsigned data is not authenticated or restored into application sessions",
+    "No inference of test provenance from empty content alone"
+  ]
+}

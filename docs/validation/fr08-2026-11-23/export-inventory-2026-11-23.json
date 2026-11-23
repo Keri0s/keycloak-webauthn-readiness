@@ -1,0 +1,742 @@
+{
+  "at_utc": "2026-11-23T14:09:19.104638+00:00",
+  "roots": [
+    "apps",
+    "docs",
+    "evidence",
+    "infra",
+    "tmp",
+    "tests",
+    "DU_LIEU_MAU/N15_San_sang_WebAuthn"
+  ],
+  "excluded": [
+    "references",
+    "review",
+    "other sample projects",
+    "runtime volumes",
+    "dependencies",
+    "symlinks/junctions",
+    "outside project",
+    "unrecognized file formats"
+  ],
+  "files": [
+    {
+      "path": "docs/handoff-validation.json",
+      "bytes": 288,
+      "sha256": "b24a8d735cbe3c4bcbec6a0a86996094aa0d770c471cce87b244d36eb9e6a5d3",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "docs/truy_vet.csv",
+      "bytes": 9900,
+      "sha256": "3d4c4e4fa272e7a2d0e2b5a5425f8702a44025728decd35981345da54d6d7822",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "docs/validation/a10-2026-11-18/results.json",
+      "bytes": 2554,
+      "sha256": "123c690ef3aaab30d45991b0de57a934d539ca33ecf721539c2028a7d255f42b",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "docs/validation/a16-reliability-2026-11-18/results.json",
+      "bytes": 3462,
+      "sha256": "6751b1a7c6d11bedd991a6b0cc928adecd04293fec9b268c4922f5c866a1382e",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "docs/validation/fr08-2026-11-23/app-audit.json",
+      "bytes": 8965,
+      "sha256": "b18f10826682faf034a259d2212282ad72e07854aa216eab61907ba6eb421759",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "docs/validation/fr08-2026-11-23/container-log-audit-20261123T073338218635Z.json",
+      "bytes": 1024,
+      "sha256": "07150843fda5ad2372906d0495f70b9e939a94e75b1f8187e611aab8ad3b708c",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "docs/validation/fr08-2026-11-23/container-log-audit-20261123T110754904136Z.json",
+      "bytes": 1024,
+      "sha256": "52954eaeee11f3ab605e08cc6e83e9c39e962652cbde08c6733174bf31f26915",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "docs/validation/fr08-2026-11-23/session-diagnostics-20261123T113735565778Z.json",
+      "bytes": 3390,
+      "sha256": "82644d9dc99bfb0a7a6d4301e29a65a26bf091912995488e39b07fb687270c97",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "docs/validation/fr08-2026-11-23/session-diagnostics-20261123T113837686270Z.json",
+      "bytes": 5219,
+      "sha256": "15e223d0be880c67394f8b8c72a8b90994c2009f12665bda872da30e74307dc9",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "docs/validation/passwordless-preflight/20261122T071144990590Z/inspection.json",
+      "bytes": 33728,
+      "sha256": "0a692cf7e3fe904dc248addf63aeff992343a3dd86ca318901c89988d58a9505",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "docs/validation/passwordless-preflight/20261123T135327930466Z/inspection.json",
+      "bytes": 34545,
+      "sha256": "28764e84e7b8ef5fa1563e4cc009840fc0c8faef9971288c1a9e748866c3b061",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "docs/validation/readiness-2026-11-13/run-metadata.json",
+      "bytes": 2541,
+      "sha256": "3cf3d2f5bae072fd466e51c35b824b9022a118b7140250309a80785b68f2e3ba",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "docs/validation/remaining-reliability-2026-11-18/results.json",
+      "bytes": 5919,
+      "sha256": "14e359eb7b3ff6b9f3362a4322ab95737ff886cebef6c5a541d470e51ff50c9b",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "docs/validation/requirements-review-2026-11-23/fr05-preparation.json",
+      "bytes": 965,
+      "sha256": "ac113fab2f356885150630c2aed250d1f9b3ab62a611a7a51c511b8de6af83b6",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "docs/validation/requirements-review-2026-11-23/review-metadata.json",
+      "bytes": 1320,
+      "sha256": "d79ed1a191ed3e6da65e9be1b5127c8ee66d9c4dd5614e8b1f0f964993f059d4",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "evidence/lab-scorecard/phieu_cham_lab_draft.csv",
+      "bytes": 1550,
+      "sha256": "9939e1f06eb0a948a1fab335a64f2eeeaaa1805202e8a534e279be785853147c",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "evidence/ledger/pull-log.jsonl",
+      "bytes": 3175,
+      "sha256": "34ae201fbd352b0a3d71256b43756392c5efaa1b3e2d8f968041d5d9b28b2448",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "evidence/ledger/so_bang_chung.csv",
+      "bytes": 20054,
+      "sha256": "fca424aaf19fd59fc2ad9a759aaac685c103c0687fb5dd9c2d19a58192bae80f",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "infra/passwordless/fr05-login.sql",
+      "bytes": 2239,
+      "status": "SQL_REQUIRES_CLASSIFICATION"
+    },
+    {
+      "path": "infra/passwordless/fr08-events-long.sql",
+      "bytes": 816,
+      "status": "SQL_SOURCE_NOT_EXPORT"
+    },
+    {
+      "path": "infra/passwordless/fr08-keycloak.sql",
+      "bytes": 2500,
+      "status": "SQL_SOURCE_NOT_EXPORT"
+    },
+    {
+      "path": "tmp/publication-check-d93ecbb201/test_cli_blank_score_and_metad0/scorecard.csv",
+      "bytes": 440,
+      "sha256": "20b437b5f4b38a8a0d612e6204c86f781bc250d465ca7ce9e137c1e392913f71",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "tmp/publication-check-d93ecbb201/test_r03_blank_csv_score_is_in0/scorecard.csv",
+      "bytes": 440,
+      "sha256": "20b437b5f4b38a8a0d612e6204c86f781bc250d465ca7ce9e137c1e392913f71",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "tmp/publication-check-d93ecbb201/test_r03_blank_csv_score_is_in1/scorecard.csv",
+      "bytes": 440,
+      "sha256": "20b437b5f4b38a8a0d612e6204c86f781bc250d465ca7ce9e137c1e392913f71",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "tmp/publication-check-d93ecbb201/test_r03_blank_csv_score_is_in2/scorecard.csv",
+      "bytes": 443,
+      "sha256": "80086820417b405aeec7af66ab1815ad78f57a86071a5b02b959b3791f85286f",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "tmp/publication-check-d93ecbb201/test_r03_invalid_csv_score_not0/scorecard.csv",
+      "bytes": 45,
+      "sha256": "9de179539208cc19daaf6a89fd94e092cec98819a24e474934f3d9e72168d4cc",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "tmp/publication-check-d93ecbb201/test_r03_invalid_csv_score_not1/scorecard.csv",
+      "bytes": 45,
+      "sha256": "99269c1e70af4ceef3fd38a5da8d64aff327be89d2f8df962c86825c62f53c4b",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "tmp/publication-check-d93ecbb201/test_r03_invalid_csv_score_not2/scorecard.csv",
+      "bytes": 45,
+      "sha256": "6433b87a52af48c4027fb1892e6027939c2a41b11f7781dff7861e56493dc5ea",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "tmp/publication-check-d93ecbb201/test_r03_invalid_csv_score_not3/scorecard.csv",
+      "bytes": 45,
+      "sha256": "1f9183e4701c9fb162809b27b72f5617d6345dd4c390d4846e5281452fa834e9",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "tmp/publication-check-d93ecbb201/test_r03_invalid_csv_score_not4/scorecard.csv",
+      "bytes": 46,
+      "sha256": "2dcaaa97f2e59ddcf2730e35cc7599543dd81a63097620a77933ca0215d402d3",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "tmp/publication-check-d93ecbb201/test_r03_malformed_csv_not_sil0/invalid.csv",
+      "bytes": 36,
+      "sha256": "276ba04991a7fbd7b55b241bf00476c109e243a9fabbfebc58335e97bf5896c1",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "tmp/publication-check-d93ecbb201/test_r03_malformed_csv_not_sil1/invalid.csv",
+      "bytes": 38,
+      "sha256": "7d246e3867b07b0c695112779f4e04b0b1183bea928e2df8ea0530c8adc59588",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "tmp/publication-check-d93ecbb201/test_r03_malformed_csv_not_sil2/invalid.csv",
+      "bytes": 49,
+      "sha256": "a096ac51cedf9c3dffc6a22b266420adbe4ade632c4bde400072cfd4447442f7",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "tmp/readiness-fixes-2026-11-13/run-metadata.json",
+      "bytes": 2141,
+      "sha256": "fd1f968cdda649201afa7d1fceedbb9665ced0aab89de9916aa73bca43ef1489",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "tmp/readiness-fixes-2026-11-13/after/test_cli_blank_score_and_metad0/scorecard.csv",
+      "bytes": 440,
+      "sha256": "20b437b5f4b38a8a0d612e6204c86f781bc250d465ca7ce9e137c1e392913f71",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "tmp/readiness-fixes-2026-11-13/after/test_r03_blank_csv_score_is_in0/scorecard.csv",
+      "bytes": 440,
+      "sha256": "20b437b5f4b38a8a0d612e6204c86f781bc250d465ca7ce9e137c1e392913f71",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "tmp/readiness-fixes-2026-11-13/after/test_r03_blank_csv_score_is_in1/scorecard.csv",
+      "bytes": 440,
+      "sha256": "20b437b5f4b38a8a0d612e6204c86f781bc250d465ca7ce9e137c1e392913f71",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "tmp/readiness-fixes-2026-11-13/after/test_r03_blank_csv_score_is_in2/scorecard.csv",
+      "bytes": 443,
+      "sha256": "80086820417b405aeec7af66ab1815ad78f57a86071a5b02b959b3791f85286f",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "tmp/readiness-fixes-2026-11-13/after/test_r03_invalid_csv_score_not0/scorecard.csv",
+      "bytes": 45,
+      "sha256": "9de179539208cc19daaf6a89fd94e092cec98819a24e474934f3d9e72168d4cc",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "tmp/readiness-fixes-2026-11-13/after/test_r03_invalid_csv_score_not1/scorecard.csv",
+      "bytes": 45,
+      "sha256": "99269c1e70af4ceef3fd38a5da8d64aff327be89d2f8df962c86825c62f53c4b",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "tmp/readiness-fixes-2026-11-13/after/test_r03_invalid_csv_score_not2/scorecard.csv",
+      "bytes": 45,
+      "sha256": "6433b87a52af48c4027fb1892e6027939c2a41b11f7781dff7861e56493dc5ea",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "tmp/readiness-fixes-2026-11-13/after/test_r03_invalid_csv_score_not3/scorecard.csv",
+      "bytes": 45,
+      "sha256": "1f9183e4701c9fb162809b27b72f5617d6345dd4c390d4846e5281452fa834e9",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "tmp/readiness-fixes-2026-11-13/after/test_r03_invalid_csv_score_not4/scorecard.csv",
+      "bytes": 46,
+      "sha256": "2dcaaa97f2e59ddcf2730e35cc7599543dd81a63097620a77933ca0215d402d3",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "tmp/readiness-fixes-2026-11-13/after/test_r03_malformed_csv_not_sil0/invalid.csv",
+      "bytes": 36,
+      "sha256": "276ba04991a7fbd7b55b241bf00476c109e243a9fabbfebc58335e97bf5896c1",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "tmp/readiness-fixes-2026-11-13/after/test_r03_malformed_csv_not_sil1/invalid.csv",
+      "bytes": 38,
+      "sha256": "7d246e3867b07b0c695112779f4e04b0b1183bea928e2df8ea0530c8adc59588",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "tmp/readiness-fixes-2026-11-13/after/test_r03_malformed_csv_not_sil2/invalid.csv",
+      "bytes": 49,
+      "sha256": "a096ac51cedf9c3dffc6a22b266420adbe4ade632c4bde400072cfd4447442f7",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "tmp/readiness-fixes-2026-11-13/before/test_cli_blank_score_and_metad0/scorecard.csv",
+      "bytes": 440,
+      "sha256": "20b437b5f4b38a8a0d612e6204c86f781bc250d465ca7ce9e137c1e392913f71",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "tmp/readiness-fixes-2026-11-13/before/test_r03_blank_csv_score_is_in0/scorecard.csv",
+      "bytes": 440,
+      "sha256": "20b437b5f4b38a8a0d612e6204c86f781bc250d465ca7ce9e137c1e392913f71",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "tmp/readiness-fixes-2026-11-13/before/test_r03_blank_csv_score_is_in1/scorecard.csv",
+      "bytes": 440,
+      "sha256": "20b437b5f4b38a8a0d612e6204c86f781bc250d465ca7ce9e137c1e392913f71",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "tmp/readiness-fixes-2026-11-13/before/test_r03_blank_csv_score_is_in2/scorecard.csv",
+      "bytes": 443,
+      "sha256": "80086820417b405aeec7af66ab1815ad78f57a86071a5b02b959b3791f85286f",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "tmp/readiness-fixes-2026-11-13/before/test_r03_invalid_csv_score_not0/scorecard.csv",
+      "bytes": 45,
+      "sha256": "9de179539208cc19daaf6a89fd94e092cec98819a24e474934f3d9e72168d4cc",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "tmp/readiness-fixes-2026-11-13/before/test_r03_invalid_csv_score_not1/scorecard.csv",
+      "bytes": 45,
+      "sha256": "99269c1e70af4ceef3fd38a5da8d64aff327be89d2f8df962c86825c62f53c4b",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "tmp/readiness-fixes-2026-11-13/before/test_r03_invalid_csv_score_not2/scorecard.csv",
+      "bytes": 45,
+      "sha256": "6433b87a52af48c4027fb1892e6027939c2a41b11f7781dff7861e56493dc5ea",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "tmp/readiness-fixes-2026-11-13/before/test_r03_invalid_csv_score_not3/scorecard.csv",
+      "bytes": 45,
+      "sha256": "1f9183e4701c9fb162809b27b72f5617d6345dd4c390d4846e5281452fa834e9",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "tmp/readiness-fixes-2026-11-13/before/test_r03_invalid_csv_score_not4/scorecard.csv",
+      "bytes": 46,
+      "sha256": "2dcaaa97f2e59ddcf2730e35cc7599543dd81a63097620a77933ca0215d402d3",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "tmp/readiness-fixes-2026-11-13/before/test_r03_malformed_csv_not_sil0/invalid.csv",
+      "bytes": 36,
+      "sha256": "276ba04991a7fbd7b55b241bf00476c109e243a9fabbfebc58335e97bf5896c1",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "tmp/readiness-fixes-2026-11-13/before/test_r03_malformed_csv_not_sil1/invalid.csv",
+      "bytes": 38,
+      "sha256": "7d246e3867b07b0c695112779f4e04b0b1183bea928e2df8ea0530c8adc59588",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "tmp/readiness-fixes-2026-11-13/before/test_r03_malformed_csv_not_sil2/invalid.csv",
+      "bytes": 49,
+      "sha256": "a096ac51cedf9c3dffc6a22b266420adbe4ade632c4bde400072cfd4447442f7",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "tmp/review-2026-11-12/blank-score.csv",
+      "bytes": 457,
+      "sha256": "768d3781e53d6b0f046e0c2b690007bd4c483482784eb1dcac9eb4eb7df30bcb",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "tmp/review-2026-11-12/review-results.json",
+      "bytes": 8572,
+      "sha256": "81ef6d6acd0df5aa4458e9e436dd2d28ba9b27b318ac2285abc4ea4b2c4b259e",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "DU_LIEU_MAU/N15_San_sang_WebAuthn/phieu_cham_loi_vuot_diem.csv",
+      "bytes": 63,
+      "sha256": "26dab9ce2f8d0459d8030d5d8cfc267d1583937f1cddff30d3ce443a2834c99a",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "DU_LIEU_MAU/N15_San_sang_WebAuthn/phieu_cham_mau_day_du.csv",
+      "bytes": 458,
+      "sha256": "76992f53582b2ad324e4b48b27708aa2cb9706d3674a03dc99b4d8466ec49d24",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "DU_LIEU_MAU/N15_San_sang_WebAuthn/phieu_cham_mau_thieu.csv",
+      "bytes": 404,
+      "sha256": "f3b6c0a6db23c0bab728a2b92d2c12e8d9096f71e09a2d985114569f423a1c71",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "DU_LIEU_MAU/N15_San_sang_WebAuthn/so_bang_chung_mau.csv",
+      "bytes": 366,
+      "sha256": "4d00d41be8b08074642fdd9e0811b9e3abb055dfa1391f62e2638d3c94cdfc06",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "DU_LIEU_MAU/N15_San_sang_WebAuthn/realm/webauthn-lab-realm.json",
+      "bytes": 1160,
+      "sha256": "e91fb55862d85d209529c2fc3c7b4be87a59ec4a2a8cb8f1f47e212c7a2185e1",
+      "signals": {
+        "private_named_fields": 0,
+        "private_jwk_objects": 0,
+        "text_markers": 0
+      },
+      "status": "SCANNED_HEURISTIC"
+    }
+  ],
+  "excluded_paths": [
+    "apps/lab/.runtime",
+    "apps/lab/.venv",
+    "apps/lab/authn/__pycache__",
+    "apps/lab/authn/migrations/__pycache__",
+    "apps/lab/config/__pycache__",
+    "apps/ledger/__pycache__",
+    "apps/ledger/tests/__pycache__",
+    "apps/readiness/__pycache__",
+    "infra/.runtime",
+    "infra/passwordless/__pycache__",
+    "tests/__pycache__"
+  ],
+  "walk_errors": [],
+  "counts": {
+    "SCANNED_HEURISTIC": 62,
+    "SQL_REQUIRES_CLASSIFICATION": 1,
+    "SQL_SOURCE_NOT_EXPORT": 2
+  },
+  "flagged_paths": [],
+  "verdict": "BOUNDED_INVENTORY_NOT_WHOLE_MACHINE_AUDIT"
+}

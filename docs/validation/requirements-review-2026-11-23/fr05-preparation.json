@@ -1,0 +1,16 @@
+{
+  "at_utc": "2026-11-23T11:55:46.479539+00:00",
+  "command": ".venv/Scripts/python.exe manage.py test authn.test_login_evidence authn.test_oidc_recovery --verbosity 1",
+  "cwd": "apps/lab",
+  "tests": 12,
+  "result": "OK",
+  "scope": "Offline SimpleTestCase with synthetic guard/provider; no real passkey or Keycloak DB SQL validation",
+  "fr05_status": "PREPARED_AWAITING_REAL_LOGIN",
+  "source_sha256": {
+    "apps/lab/authn/evidence.py": "3ce1b9efd239bcb120cb569e076e1e4e481ca26d4c6debe16c2cb51d984b2a4a",
+    "apps/lab/authn/views.py": "cced615a4545b24d14ab55929ea7d3558bc91a8908ff87265f1e05d3836e6a11",
+    "apps/lab/authn/test_login_evidence.py": "182f7c0ba24a3e48d91f71da88481d19a406db430df8fe69eb8332faf4909baa",
+    "apps/lab/authn/test_oidc_recovery.py": "be19744085eb8d15e55e26990a8c3a3c8c9a7c96d67b7c531516dafba955e5ef",
+    "infra/passwordless/fr05-login.sql": "440619227c6ef93220c6a0fc6d9037a5d6e4cfbbe3aef97b19bdea9104058e8f"
+  }
+}

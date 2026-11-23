@@ -1,0 +1,41 @@
+{
+  "reviewed_at_utc": "2026-11-23T11:50:23.918893+00:00",
+  "basis": "SRS N15 v0.9; local evidence review",
+  "readiness_historical_run": "2026-11-13",
+  "new_test_run": false,
+  "source_hash_matches": {
+    "apps/readiness/__init__.py": true,
+    "apps/readiness/cli.py": true,
+    "apps/readiness/evaluator.py": true,
+    "apps/readiness/loader.py": true,
+    "apps/readiness/models.py": true,
+    "apps/readiness/parser.py": true,
+    "tests/test_fr01_catalog.py": true,
+    "tests/test_fr02_validation.py": true,
+    "tests/test_fr03_calculator.py": true,
+    "tests/test_readiness_regressions.py": true
+  },
+  "source_hash_match_count": 10,
+  "status_counts": {
+    "tested": 6,
+    "observed": 4,
+    "bounded_review": 1,
+    "partial": 9
+  },
+  "scope_note": "Evidence classifications, not acceptance percentage; no runtime mutation",
+  "latest_evidence_update": {
+    "recorded_at_utc": "2026-11-23T12:03:50.520204+00:00",
+    "source": "user screenshots; fr05-observed-185955.md",
+    "status_counts": {
+      "tested": 6,
+      "observed": 6,
+      "bounded_review": 1,
+      "partial": 7
+    },
+    "updated_requirements": [
+      "FR-05",
+      "IF-03"
+    ],
+    "result": "PASS_OBSERVED for correlated login case; original review counts retained as history"
+  }
+}

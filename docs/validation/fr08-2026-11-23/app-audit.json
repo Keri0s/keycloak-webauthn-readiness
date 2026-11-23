@@ -1,0 +1,437 @@
+{
+  "generated_at_utc": "2026-11-23T07:25:37.419203+00:00",
+  "scope": "Django public schema, up to 1000 sessions, named local logs and selected JSON/CSV evidence exports",
+  "verdict": "PARTIAL_REVIEW_NOT_FULL_FR08_PASS",
+  "schema_columns": [
+    [
+      "auth_group",
+      "id",
+      "integer"
+    ],
+    [
+      "auth_group",
+      "name",
+      "character varying"
+    ],
+    [
+      "auth_group_permissions",
+      "id",
+      "bigint"
+    ],
+    [
+      "auth_group_permissions",
+      "group_id",
+      "integer"
+    ],
+    [
+      "auth_group_permissions",
+      "permission_id",
+      "integer"
+    ],
+    [
+      "auth_permission",
+      "id",
+      "integer"
+    ],
+    [
+      "auth_permission",
+      "name",
+      "character varying"
+    ],
+    [
+      "auth_permission",
+      "content_type_id",
+      "integer"
+    ],
+    [
+      "auth_permission",
+      "codename",
+      "character varying"
+    ],
+    [
+      "auth_user",
+      "id",
+      "integer"
+    ],
+    [
+      "auth_user",
+      "password",
+      "character varying"
+    ],
+    [
+      "auth_user",
+      "last_login",
+      "timestamp with time zone"
+    ],
+    [
+      "auth_user",
+      "is_superuser",
+      "boolean"
+    ],
+    [
+      "auth_user",
+      "username",
+      "character varying"
+    ],
+    [
+      "auth_user",
+      "first_name",
+      "character varying"
+    ],
+    [
+      "auth_user",
+      "last_name",
+      "character varying"
+    ],
+    [
+      "auth_user",
+      "email",
+      "character varying"
+    ],
+    [
+      "auth_user",
+      "is_staff",
+      "boolean"
+    ],
+    [
+      "auth_user",
+      "is_active",
+      "boolean"
+    ],
+    [
+      "auth_user",
+      "date_joined",
+      "timestamp with time zone"
+    ],
+    [
+      "auth_user_groups",
+      "id",
+      "bigint"
+    ],
+    [
+      "auth_user_groups",
+      "user_id",
+      "integer"
+    ],
+    [
+      "auth_user_groups",
+      "group_id",
+      "integer"
+    ],
+    [
+      "auth_user_user_permissions",
+      "id",
+      "bigint"
+    ],
+    [
+      "auth_user_user_permissions",
+      "user_id",
+      "integer"
+    ],
+    [
+      "auth_user_user_permissions",
+      "permission_id",
+      "integer"
+    ],
+    [
+      "authn_externalidentity",
+      "id",
+      "bigint"
+    ],
+    [
+      "authn_externalidentity",
+      "issuer",
+      "character varying"
+    ],
+    [
+      "authn_externalidentity",
+      "subject",
+      "character varying"
+    ],
+    [
+      "authn_externalidentity",
+      "user_id",
+      "integer"
+    ],
+    [
+      "authn_logoutreceipt",
+      "id",
+      "bigint"
+    ],
+    [
+      "authn_logoutreceipt",
+      "issuer",
+      "character varying"
+    ],
+    [
+      "authn_logoutreceipt",
+      "client_id",
+      "character varying"
+    ],
+    [
+      "authn_logoutreceipt",
+      "jti",
+      "character varying"
+    ],
+    [
+      "authn_logoutreceipt",
+      "received_at",
+      "timestamp with time zone"
+    ],
+    [
+      "authn_logoutreceipt",
+      "processed_at",
+      "timestamp with time zone"
+    ],
+    [
+      "authn_oidcsessiongroup",
+      "id",
+      "bigint"
+    ],
+    [
+      "authn_oidcsessiongroup",
+      "issuer",
+      "character varying"
+    ],
+    [
+      "authn_oidcsessiongroup",
+      "client_id",
+      "character varying"
+    ],
+    [
+      "authn_oidcsessiongroup",
+      "sid",
+      "character varying"
+    ],
+    [
+      "authn_oidcsessiongroup",
+      "subject",
+      "character varying"
+    ],
+    [
+      "authn_oidcsessiongroup",
+      "created_at",
+      "timestamp with time zone"
+    ],
+    [
+      "authn_oidcsessiongroup",
+      "revoked_at",
+      "timestamp with time zone"
+    ],
+    [
+      "authn_sessionbinding",
+      "id",
+      "bigint"
+    ],
+    [
+      "authn_sessionbinding",
+      "session_key",
+      "character varying"
+    ],
+    [
+      "authn_sessionbinding",
+      "created_at",
+      "timestamp with time zone"
+    ],
+    [
+      "authn_sessionbinding",
+      "expires_at",
+      "timestamp with time zone"
+    ],
+    [
+      "authn_sessionbinding",
+      "revoked_at",
+      "timestamp with time zone"
+    ],
+    [
+      "authn_sessionbinding",
+      "group_id",
+      "bigint"
+    ],
+    [
+      "authn_sessionbinding",
+      "user_id",
+      "integer"
+    ],
+    [
+      "authn_sidrevocationmarker",
+      "id",
+      "bigint"
+    ],
+    [
+      "authn_sidrevocationmarker",
+      "issuer",
+      "character varying"
+    ],
+    [
+      "authn_sidrevocationmarker",
+      "client_id",
+      "character varying"
+    ],
+    [
+      "authn_sidrevocationmarker",
+      "sid",
+      "character varying"
+    ],
+    [
+      "authn_sidrevocationmarker",
+      "revoked_at",
+      "timestamp with time zone"
+    ],
+    [
+      "django_admin_log",
+      "id",
+      "integer"
+    ],
+    [
+      "django_admin_log",
+      "action_time",
+      "timestamp with time zone"
+    ],
+    [
+      "django_admin_log",
+      "object_id",
+      "text"
+    ],
+    [
+      "django_admin_log",
+      "object_repr",
+      "character varying"
+    ],
+    [
+      "django_admin_log",
+      "action_flag",
+      "smallint"
+    ],
+    [
+      "django_admin_log",
+      "change_message",
+      "text"
+    ],
+    [
+      "django_admin_log",
+      "content_type_id",
+      "integer"
+    ],
+    [
+      "django_admin_log",
+      "user_id",
+      "integer"
+    ],
+    [
+      "django_content_type",
+      "id",
+      "integer"
+    ],
+    [
+      "django_content_type",
+      "app_label",
+      "character varying"
+    ],
+    [
+      "django_content_type",
+      "model",
+      "character varying"
+    ],
+    [
+      "django_migrations",
+      "id",
+      "bigint"
+    ],
+    [
+      "django_migrations",
+      "app",
+      "character varying"
+    ],
+    [
+      "django_migrations",
+      "name",
+      "character varying"
+    ],
+    [
+      "django_migrations",
+      "applied",
+      "timestamp with time zone"
+    ],
+    [
+      "django_session",
+      "session_key",
+      "character varying"
+    ],
+    [
+      "django_session",
+      "session_data",
+      "text"
+    ],
+    [
+      "django_session",
+      "expire_date",
+      "timestamp with time zone"
+    ]
+  ],
+  "session_rows_total": 21,
+  "sessions": {
+    "rows_scanned": 21,
+    "rows_decoded": 16,
+    "decode_errors": 5,
+    "decode_error_types": {
+      "BadSignature": 5
+    },
+    "private_named_fields": 0,
+    "private_jwk_objects": 0,
+    "text_markers": 0
+  },
+  "files": [
+    {
+      "path": "apps/lab/.runtime/logs/oidc-callback.log",
+      "bytes": 699,
+      "private_named_fields": 0,
+      "private_jwk_objects": 0,
+      "text_markers": 0,
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "docs/validation/passwordless-preflight/20261122T071144990590Z/inspection.json",
+      "bytes": 33728,
+      "private_named_fields": 0,
+      "private_jwk_objects": 0,
+      "text_markers": 0,
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "tmp/lab-server.stderr.log",
+      "bytes": 0,
+      "private_named_fields": 0,
+      "private_jwk_objects": 0,
+      "text_markers": 0,
+      "status": "SCANNED_HEURISTIC"
+    },
+    {
+      "path": "tmp/lab-server.stdout.log",
+      "bytes": 0,
+      "private_named_fields": 0,
+      "private_jwk_objects": 0,
+      "text_markers": 0,
+      "status": "SCANNED_HEURISTIC"
+    }
+  ],
+  "source_sha256": {
+    "apps/lab/authn/models.py": "0d9c000a47aeccc66f002eccdd31715b2dda61435e10270221edb14f56142384",
+    "apps/lab/authn/services.py": "c14d997984210cb03ab4b49ded1a4c4b81d1edbc0d59cc877c27894b6a242f9e",
+    "apps/lab/authn/views.py": "40da15de25a4421d1d6addcdbb84799ab5c68832421c1f28816425bde358c549",
+    "apps/lab/authn/backchannel.py": "62b720985916380ece8c0a14b07a6d536684950c785c1686eb74ec6647ee6b2f",
+    "apps/lab/authn/diagnostics.py": "ccd2155477ae9cf0a88357f22759851657a0b4b5dc000e4c702616f3385fe9b8",
+    "apps/lab/config/oidc.py": "7aafeef05c60d74bd416ee78a1768902d3c078d453579ec8293f6bfacfde0e4b",
+    "apps/lab/config/settings.py": "4b10564e8e0cb1f9d1a41e9cfaa9cf26b6ea0013193e96d93671e57f3abcae8b",
+    "infra/Caddyfile": "8010f3aa42c2eb917aec95b64b87429e2cedf07209fc6091c6fcf3defe9a58b8",
+    "infra/passwordless/inspect_keycloak.py": "b96ac1f3a481e1b3071e674ba795e9556b28a5d9ae83153228c819fa1ec29b33",
+    "infra/passwordless/audit_fr08.py": "b17ab7baeb0ee6802d08b9679a36e6d77dcaf649c1b8c8799894fc755fa5f891"
+  },
+  "not_inspected": [
+    "Keycloak database",
+    "Keycloak/Caddy container logs",
+    "browser/Windows logs",
+    "arbitrary backups/exports",
+    "all possible binary or encrypted key encodings"
+  ]
+}

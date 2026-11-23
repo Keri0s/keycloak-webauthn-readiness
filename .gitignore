@@ -33,7 +33,6 @@ desktop.ini
 /AGENTS.md
 /WORKFLOW.md
 /WORKFLOW-STATE.md
-/*.docx
 /docs/*
 !/docs/README.md
 !/docs/validation/
@@ -53,3 +52,4 @@ desktop.ini
 !/tmp/audit_a16_reliability.py
 !/tmp/audit_remaining_reliability.py
 !/docs/ROADMAP.md
+!/docs/truy_vet.csv

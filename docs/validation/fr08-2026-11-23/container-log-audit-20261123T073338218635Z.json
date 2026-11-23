@@ -1,0 +1,35 @@
+{
+  "since": "2026-11-22T00:00:00+07:00",
+  "until": "2026-11-23T07:33:37.683234+00:00",
+  "tail_per_container": 10000,
+  "scope": "Available logs for current lab Keycloak/Caddy containers only",
+  "limitations": [
+    "Rotated/deleted container logs are not recovered",
+    "Marker detection does not cover every private key encoding",
+    "A marker needs classification: TLS/JWT keys are not passkey keys"
+  ],
+  "services": [
+    {
+      "service": "keycloak",
+      "returncode": 0,
+      "lines": 217,
+      "tail_limit_may_apply": false,
+      "private_named_fields": 0,
+      "private_jwk_objects": 0,
+      "text_markers": 0,
+      "status": "SCANNED_HEURISTIC",
+      "stderr_present": false
+    },
+    {
+      "service": "caddy",
+      "returncode": 0,
+      "lines": 122,
+      "tail_limit_may_apply": false,
+      "private_named_fields": 0,
+      "private_jwk_objects": 0,
+      "text_markers": 0,
+      "status": "SCANNED_HEURISTIC",
+      "stderr_present": false
+    }
+  ]
+}

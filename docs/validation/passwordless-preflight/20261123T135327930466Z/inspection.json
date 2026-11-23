@@ -1,0 +1,1058 @@
+{
+  "schema_version": 1,
+  "captured_at_utc": "2026-11-23T13:53:27.929832+00:00",
+  "source": "Keycloak Admin REST API over verified HTTPS; allowlisted fields only",
+  "expected_version_from_compose": "26.8.2 (runtime version not queried)",
+  "inspector_sha256": "b96ac1f3a481e1b3071e674ba795e9556b28a5d9ae83153228c819fa1ec29b33",
+  "realm": {
+    "realm": "webauthn-lab",
+    "enabled": true,
+    "sslRequired": "external",
+    "browserFlow": "browser-password-webauthn",
+    "registrationFlow": "registration",
+    "resetCredentialsFlow": "reset credentials",
+    "directGrantFlow": "direct grant",
+    "registrationAllowed": false,
+    "resetPasswordAllowed": false,
+    "rememberMe": false,
+    "loginWithEmailAllowed": true,
+    "ssoSessionIdleTimeout": 1800,
+    "ssoSessionMaxLifespan": 36000,
+    "accessTokenLifespan": 300,
+    "actionTokenGeneratedByAdminLifespan": 43200,
+    "actionTokenGeneratedByUserLifespan": 300,
+    "eventsEnabled": true,
+    "eventsExpiration": 604800,
+    "enabledEventTypes": [
+      "UPDATE_CONSENT_ERROR",
+      "UPDATE_TOTP",
+      "UPDATE_CREDENTIAL",
+      "IMPERSONATE_ERROR",
+      "CUSTOM_REQUIRED_ACTION",
+      "RESTART_AUTHENTICATION",
+      "VERIFIABLE_CREDENTIAL_OFFER_REQUEST",
+      "IMPERSONATE",
+      "LOGIN",
+      "CLIENT_INITIATED_ACCOUNT_LINKING",
+      "USER_DISABLED_BY_PERMANENT_LOCKOUT",
+      "OAUTH2_EXTENSION_GRANT",
+      "VERIFIABLE_CREDENTIAL_REQUEST",
+      "REMOVE_CREDENTIAL_ERROR",
+      "TOKEN_EXCHANGE",
+      "REGISTER",
+      "DELETE_ACCOUNT_ERROR",
+      "VERIFIABLE_CREDENTIAL_OFFER_REQUEST_ERROR",
+      "IDENTITY_PROVIDER_LINK_ACCOUNT",
+      "USER_DISABLED_BY_TEMPORARY_LOCKOUT",
+      "UPDATE_PASSWORD",
+      "DELETE_ACCOUNT",
+      "IDENTITY_PROVIDER_FIRST_LOGIN",
+      "VERIFY_EMAIL",
+      "CLIENT_LOGIN_ERROR",
+      "RESTART_AUTHENTICATION_ERROR",
+      "REMOVE_FEDERATED_IDENTITY_ERROR",
+      "EXECUTE_ACTIONS",
+      "TOKEN_EXCHANGE_ERROR",
+      "VERIFIABLE_CREDENTIAL_PRE_AUTHORIZED_GRANT",
+      "FEDERATED_IDENTITY_OVERRIDE_LINK",
+      "SEND_IDENTITY_PROVIDER_LINK_ERROR",
+      "VERIFIABLE_CREDENTIAL_CREATE_OFFER",
+      "VERIFIABLE_CREDENTIAL_PRE_AUTHORIZED_GRANT_ERROR",
+      "JWT_AUTHORIZATION_GRANT_ERROR",
+      "EXECUTE_ACTION_TOKEN_ERROR",
+      "SEND_VERIFY_EMAIL",
+      "OAUTH2_EXTENSION_GRANT_ERROR",
+      "EXECUTE_ACTIONS_ERROR",
+      "OAUTH2_DEVICE_CODE_TO_TOKEN",
+      "OAUTH2_DEVICE_VERIFY_USER_CODE_ERROR",
+      "REVOKE_GRANT_ERROR",
+      "UPDATE_EMAIL_ERROR",
+      "UPDATE_PROFILE",
+      "INVITE_ORG_ERROR",
+      "VERIFIABLE_CREDENTIAL_REQUEST_ERROR",
+      "SEND_VERIFY_EMAIL_ERROR",
+      "SEND_IDENTITY_PROVIDER_LINK",
+      "CLIENT_INITIATED_ACCOUNT_LINKING_ERROR",
+      "OAUTH2_DEVICE_AUTH_ERROR",
+      "REMOVE_TOTP_ERROR",
+      "VERIFY_EMAIL_ERROR",
+      "CLIENT_UPDATE",
+      "JWT_AUTHORIZATION_GRANT",
+      "UPDATE_TOTP_ERROR",
+      "VERIFY_PROFILE",
+      "GRANT_CONSENT_ERROR",
+      "SEND_RESET_PASSWORD",
+      "GRANT_CONSENT",
+      "VERIFY_PROFILE_ERROR",
+      "REMOVE_TOTP",
+      "REVOKE_GRANT",
+      "LOGIN_ERROR",
+      "CLIENT_LOGIN",
+      "RESET_PASSWORD_ERROR",
+      "CODE_TO_TOKEN_ERROR",
+      "OAUTH2_DEVICE_CODE_TO_TOKEN_ERROR",
+      "UPDATE_PROFILE_ERROR",
+      "UPDATE_PASSWORD_ERROR",
+      "OAUTH2_DEVICE_VERIFY_USER_CODE",
+      "IDENTITY_PROVIDER_LOGIN",
+      "LOGOUT",
+      "AUTHREQID_TO_TOKEN",
+      "CLIENT_REGISTER",
+      "FEDERATED_IDENTITY_LINK_ERROR",
+      "CLIENT_DELETE",
+      "CLIENT_DELETE_ERROR",
+      "PERMISSION_TOKEN",
+      "UPDATE_CREDENTIAL_ERROR",
+      "OAUTH2_DEVICE_AUTH",
+      "REMOVE_FEDERATED_IDENTITY",
+      "IDENTITY_PROVIDER_POST_LOGIN",
+      "VERIFIABLE_CREDENTIAL_CREATE_OFFER_ERROR",
+      "IDENTITY_PROVIDER_LINK_ACCOUNT_ERROR",
+      "FEDERATED_IDENTITY_OVERRIDE_LINK_ERROR",
+      "UPDATE_EMAIL",
+      "REGISTER_ERROR",
+      "LOGOUT_ERROR",
+      "CLIENT_UPDATE_ERROR",
+      "AUTHREQID_TO_TOKEN_ERROR",
+      "FEDERATED_IDENTITY_LINK",
+      "CLIENT_REGISTER_ERROR",
+      "INVITE_ORG",
+      "IDENTITY_PROVIDER_LOGIN_ERROR",
+      "RESET_PASSWORD",
+      "REMOVE_CREDENTIAL",
+      "UPDATE_CONSENT",
+      "SEND_RESET_PASSWORD_ERROR",
+      "IDENTITY_PROVIDER_POST_LOGIN_ERROR",
+      "CUSTOM_REQUIRED_ACTION_ERROR",
+      "CODE_TO_TOKEN",
+      "IDENTITY_PROVIDER_FIRST_LOGIN_ERROR"
+    ],
+    "adminEventsEnabled": false,
+    "adminEventsDetailsEnabled": false,
+    "webAuthnPolicyRpEntityName": "Readiness Lab",
+    "webAuthnPolicyRpId": "auth.readiness.test",
+    "webAuthnPolicySignatureAlgorithms": [
+      "ES256",
+      "RS256"
+    ],
+    "webAuthnPolicyAttestationConveyancePreference": "none",
+    "webAuthnPolicyAuthenticatorAttachment": "platform",
+    "webAuthnPolicyRequireResidentKey": "not specified",
+    "webAuthnPolicyUserVerificationRequirement": "required",
+    "webAuthnPolicyCreateTimeout": 0,
+    "webAuthnPolicyAvoidSameAuthenticatorRegister": false,
+    "webAuthnPolicyAcceptableAaguids": [],
+    "webAuthnPolicyExtraOrigins": [],
+    "webAuthnPolicyPasswordlessRpEntityName": "Readiness Lab",
+    "webAuthnPolicyPasswordlessRpId": "auth.readiness.test",
+    "webAuthnPolicyPasswordlessSignatureAlgorithms": [
+      "ES256",
+      "RS256"
+    ],
+    "webAuthnPolicyPasswordlessAttestationConveyancePreference": "none",
+    "webAuthnPolicyPasswordlessAuthenticatorAttachment": "platform",
+    "webAuthnPolicyPasswordlessRequireResidentKey": "not specified",
+    "webAuthnPolicyPasswordlessUserVerificationRequirement": "required",
+    "webAuthnPolicyPasswordlessCreateTimeout": 60,
+    "webAuthnPolicyPasswordlessAvoidSameAuthenticatorRegister": false,
+    "webAuthnPolicyPasswordlessAcceptableAaguids": [],
+    "webAuthnPolicyPasswordlessExtraOrigins": [],
+    "webAuthnPolicyPasswordlessPasskeysEnabled": false
+  },
+  "client": {
+    "id": "a8f5bdbd-0b1b-450d-814d-8d4b9f175b35",
+    "clientId": "app-lab",
+    "enabled": true,
+    "protocol": "openid-connect",
+    "publicClient": false,
+    "bearerOnly": false,
+    "standardFlowEnabled": true,
+    "implicitFlowEnabled": false,
+    "directAccessGrantsEnabled": false,
+    "serviceAccountsEnabled": false,
+    "redirectUris": [
+      "https://app.readiness.test:9443/auth/callback/"
+    ],
+    "webOrigins": [],
+    "attributes": {
+      "pkce.code.challenge.method": "S256",
+      "backchannel.logout.url": "https://app.readiness.test:9443/auth/backchannel-logout/",
+      "backchannel.logout.session.required": "true",
+      "post.logout.redirect.uris": "https://app.readiness.test:9443/auth/logged-out/"
+    },
+    "authenticationFlowBindingOverrides": {
+      "browser": "5a254377-f5bd-4108-bffc-c862d790227b"
+    }
+  },
+  "flows": [
+    {
+      "id": "4359ed7b-fefb-4687-bc13-81f34abdf5a4",
+      "alias": "browser",
+      "providerId": "basic-flow",
+      "topLevel": true,
+      "builtIn": true,
+      "executions": [
+        {
+          "id": "faccac0b-13ce-4916-854c-5e7a38029430",
+          "requirement": "ALTERNATIVE",
+          "displayName": "Cookie",
+          "providerId": "auth-cookie",
+          "level": 0,
+          "index": 0,
+          "priority": 10
+        },
+        {
+          "id": "d5eb7c8b-42e4-4696-a189-0fbf973412fd",
+          "requirement": "DISABLED",
+          "displayName": "Kerberos",
+          "providerId": "auth-spnego",
+          "level": 0,
+          "index": 1,
+          "priority": 20
+        },
+        {
+          "id": "3beaaf1f-90fb-4839-97fb-8b541d02fcde",
+          "requirement": "ALTERNATIVE",
+          "displayName": "Identity Provider Redirector",
+          "providerId": "identity-provider-redirector",
+          "level": 0,
+          "index": 2,
+          "priority": 25
+        },
+        {
+          "id": "6ec802b9-87be-4295-aaa3-74dae76d62fc",
+          "requirement": "ALTERNATIVE",
+          "displayName": "Organization",
+          "authenticationFlow": true,
+          "flowId": "16bb5187-a918-43cc-af59-540e2b748b49",
+          "level": 0,
+          "index": 3,
+          "priority": 26
+        },
+        {
+          "id": "18da9e7b-6da4-4e8e-84d3-0a5f66144cf7",
+          "requirement": "CONDITIONAL",
+          "displayName": "Browser - Conditional Organization",
+          "authenticationFlow": true,
+          "flowId": "f207b76d-992c-4fbb-9b43-4534ce8ee8e4",
+          "level": 1,
+          "index": 0,
+          "priority": 10
+        },
+        {
+          "id": "f55a5683-c9dd-4d3d-a245-1b519a9a6df5",
+          "requirement": "REQUIRED",
+          "displayName": "Condition - user configured",
+          "providerId": "conditional-user-configured",
+          "level": 2,
+          "index": 0,
+          "priority": 10
+        },
+        {
+          "id": "2d0964b7-2180-4682-8d50-0bce076f92de",
+          "requirement": "ALTERNATIVE",
+          "displayName": "Organization Identity-First Login",
+          "providerId": "organization",
+          "level": 2,
+          "index": 1,
+          "priority": 20
+        },
+        {
+          "id": "99a4845a-b26b-46ad-9426-a746f60341f8",
+          "requirement": "ALTERNATIVE",
+          "displayName": "forms",
+          "authenticationFlow": true,
+          "flowId": "28babfb4-4101-4bd4-8abc-2af89d4ae941",
+          "level": 0,
+          "index": 4,
+          "priority": 30
+        },
+        {
+          "id": "d59e2788-25ee-42af-bcfe-a99fd71fa585",
+          "requirement": "REQUIRED",
+          "displayName": "Username Password Form",
+          "providerId": "auth-username-password-form",
+          "level": 1,
+          "index": 0,
+          "priority": 10
+        },
+        {
+          "id": "a5d17c31-f997-4fc8-92b3-553f6f0fee24",
+          "requirement": "CONDITIONAL",
+          "displayName": "Browser - Conditional 2FA",
+          "authenticationFlow": true,
+          "flowId": "ffb391b9-902d-4bba-ae48-55b91d94a325",
+          "level": 1,
+          "index": 1,
+          "priority": 20
+        },
+        {
+          "id": "c18094d5-5c43-4918-98b8-4f886ef784cf",
+          "requirement": "REQUIRED",
+          "displayName": "Condition - user configured",
+          "providerId": "conditional-user-configured",
+          "level": 2,
+          "index": 0,
+          "priority": 10
+        },
+        {
+          "id": "68dd5519-e708-448e-8939-f4330ba8c81e",
+          "requirement": "REQUIRED",
+          "displayName": "Condition - credential",
+          "providerId": "conditional-credential",
+          "level": 2,
+          "index": 1,
+          "priority": 20,
+          "authenticationConfig": "91b4e7f5-de13-44f5-9e87-ad4d3a83b805"
+        },
+        {
+          "id": "30931783-e905-41eb-9aea-09bb72d06d7b",
+          "requirement": "ALTERNATIVE",
+          "displayName": "OTP Form",
+          "providerId": "auth-otp-form",
+          "level": 2,
+          "index": 2,
+          "priority": 30
+        },
+        {
+          "id": "6b57e50e-36a8-4c26-b7b5-0d75e89d0b9d",
+          "requirement": "DISABLED",
+          "displayName": "WebAuthn Authenticator",
+          "providerId": "webauthn-authenticator",
+          "level": 2,
+          "index": 3,
+          "priority": 40
+        },
+        {
+          "id": "dfa6985b-b747-427f-a2d6-1534c28a4c13",
+          "requirement": "DISABLED",
+          "displayName": "Recovery Authentication Code Form",
+          "providerId": "auth-recovery-authn-code-form",
+          "level": 2,
+          "index": 4,
+          "priority": 50
+        }
+      ]
+    },
+    {
+      "id": "e8c5a835-c410-4532-a4b9-985b6739ca11",
+      "alias": "direct grant",
+      "providerId": "basic-flow",
+      "topLevel": true,
+      "builtIn": true,
+      "executions": [
+        {
+          "id": "4a14a1ed-b2c1-40a1-ad1b-91641707affc",
+          "requirement": "REQUIRED",
+          "displayName": "Username Validation",
+          "providerId": "direct-grant-validate-username",
+          "level": 0,
+          "index": 0,
+          "priority": 10
+        },
+        {
+          "id": "e6d66931-b9e5-423c-8dc8-4c4f70635d40",
+          "requirement": "REQUIRED",
+          "displayName": "Password",
+          "providerId": "direct-grant-validate-password",
+          "level": 0,
+          "index": 1,
+          "priority": 20
+        },
+        {
+          "id": "db2eba8e-a0c2-4b79-9d69-15689b33e460",
+          "requirement": "CONDITIONAL",
+          "displayName": "Direct Grant - Conditional OTP",
+          "authenticationFlow": true,
+          "flowId": "ac6cd039-72d5-4b23-9968-fb42bb9ae144",
+          "level": 0,
+          "index": 2,
+          "priority": 30
+        },
+        {
+          "id": "5cfa1532-0820-405f-9c19-6080c686f6ed",
+          "requirement": "REQUIRED",
+          "displayName": "Condition - user configured",
+          "providerId": "conditional-user-configured",
+          "level": 1,
+          "index": 0,
+          "priority": 10
+        },
+        {
+          "id": "4b739f3e-6ec4-4c95-8f91-28e5c5a730d1",
+          "requirement": "REQUIRED",
+          "displayName": "OTP",
+          "providerId": "direct-grant-validate-otp",
+          "level": 1,
+          "index": 1,
+          "priority": 20
+        }
+      ]
+    },
+    {
+      "id": "a984839f-3e78-4f3e-a21f-a20e2ea1d23b",
+      "alias": "registration",
+      "providerId": "basic-flow",
+      "topLevel": true,
+      "builtIn": true,
+      "executions": [
+        {
+          "id": "40e1e101-7ae7-4ff1-93c3-fd9ad152f7d8",
+          "requirement": "REQUIRED",
+          "displayName": "registration form",
+          "providerId": "registration-page-form",
+          "authenticationFlow": true,
+          "flowId": "6a4a1b4f-5d4c-4cf3-a17e-688acdcf824b",
+          "level": 0,
+          "index": 0,
+          "priority": 10
+        },
+        {
+          "id": "de4f9fff-852b-491d-8edc-6c02369c137e",
+          "requirement": "REQUIRED",
+          "displayName": "Registration User Profile Creation",
+          "providerId": "registration-user-creation",
+          "level": 1,
+          "index": 0,
+          "priority": 20
+        },
+        {
+          "id": "a0ac7c38-aad5-4a84-83ca-e315289fd938",
+          "requirement": "REQUIRED",
+          "displayName": "Password Validation",
+          "providerId": "registration-password-action",
+          "level": 1,
+          "index": 1,
+          "priority": 50
+        },
+        {
+          "id": "cc2bea5f-a2da-405e-8b48-fe9dda8f9d22",
+          "requirement": "DISABLED",
+          "displayName": "reCAPTCHA",
+          "providerId": "registration-recaptcha-action",
+          "level": 1,
+          "index": 2,
+          "priority": 60
+        },
+        {
+          "id": "6b291def-b0a3-438f-bade-8b2ef620fdc3",
+          "requirement": "DISABLED",
+          "displayName": "Terms and conditions",
+          "providerId": "registration-terms-and-conditions",
+          "level": 1,
+          "index": 3,
+          "priority": 70
+        }
+      ]
+    },
+    {
+      "id": "07fdee65-62df-4d17-a5b0-2012abe93328",
+      "alias": "reset credentials",
+      "providerId": "basic-flow",
+      "topLevel": true,
+      "builtIn": true,
+      "executions": [
+        {
+          "id": "97212585-f833-4d52-bab6-fd825d343682",
+          "requirement": "REQUIRED",
+          "displayName": "Choose User",
+          "providerId": "reset-credentials-choose-user",
+          "level": 0,
+          "index": 0,
+          "priority": 10
+        },
+        {
+          "id": "09683684-ccd0-4d3c-93f8-28cfca9380ae",
+          "requirement": "REQUIRED",
+          "displayName": "Send Reset Email",
+          "providerId": "reset-credential-email",
+          "level": 0,
+          "index": 1,
+          "priority": 20
+        },
+        {
+          "id": "07424422-dbbe-4563-bc32-72f201005a12",
+          "requirement": "REQUIRED",
+          "displayName": "Reset Password",
+          "providerId": "reset-password",
+          "level": 0,
+          "index": 2,
+          "priority": 30
+        },
+        {
+          "id": "c24a781f-dab2-44e9-a033-b7be78a3b5bc",
+          "requirement": "CONDITIONAL",
+          "displayName": "Reset - Conditional OTP",
+          "authenticationFlow": true,
+          "flowId": "6e94f5aa-71d0-4bd9-8516-67e6599cc352",
+          "level": 0,
+          "index": 3,
+          "priority": 40
+        },
+        {
+          "id": "062c2971-d486-4db3-9a58-c5629153fdf6",
+          "requirement": "REQUIRED",
+          "displayName": "Condition - user configured",
+          "providerId": "conditional-user-configured",
+          "level": 1,
+          "index": 0,
+          "priority": 10
+        },
+        {
+          "id": "afc7f472-fdc3-46fa-8b80-0943281a1ed7",
+          "requirement": "REQUIRED",
+          "displayName": "Reset OTP",
+          "providerId": "reset-otp",
+          "level": 1,
+          "index": 1,
+          "priority": 20
+        }
+      ]
+    },
+    {
+      "id": "8c845e2d-2932-48cf-907f-551c207293dd",
+      "alias": "clients",
+      "providerId": "client-flow",
+      "topLevel": true,
+      "builtIn": true,
+      "executions": [
+        {
+          "id": "afd198f3-bdce-45cb-a17f-b0520287e0f8",
+          "requirement": "ALTERNATIVE",
+          "displayName": "Client Id and Secret",
+          "providerId": "client-secret",
+          "level": 0,
+          "index": 0,
+          "priority": 10
+        },
+        {
+          "id": "cdde1829-d083-4d6c-8c78-debd47d33208",
+          "requirement": "ALTERNATIVE",
+          "displayName": "Signed JWT",
+          "providerId": "client-jwt",
+          "level": 0,
+          "index": 1,
+          "priority": 20
+        },
+        {
+          "id": "0fff26b5-eb4c-4b52-b16b-d0005aacbe01",
+          "requirement": "ALTERNATIVE",
+          "displayName": "Signed JWT with Client Secret",
+          "providerId": "client-secret-jwt",
+          "level": 0,
+          "index": 2,
+          "priority": 30
+        },
+        {
+          "id": "27c482e4-8147-445b-b6d1-3efbfb1742fc",
+          "requirement": "ALTERNATIVE",
+          "displayName": "X509 Certificate",
+          "providerId": "client-x509",
+          "level": 0,
+          "index": 3,
+          "priority": 40
+        },
+        {
+          "id": "66376a25-1c1f-4d67-b92f-e4eb7b3d23be",
+          "requirement": "ALTERNATIVE",
+          "displayName": "Signed JWT - Federated",
+          "providerId": "federated-jwt",
+          "level": 0,
+          "index": 4,
+          "priority": 50
+        }
+      ]
+    },
+    {
+      "id": "accdb16d-87c0-4de2-9e9b-8e912bd02481",
+      "alias": "first broker login",
+      "providerId": "basic-flow",
+      "topLevel": true,
+      "builtIn": true,
+      "executions": [
+        {
+          "id": "a201e146-289c-4e19-924d-728f98abf389",
+          "requirement": "REQUIRED",
+          "displayName": "Review Profile",
+          "providerId": "idp-review-profile",
+          "level": 0,
+          "index": 0,
+          "priority": 10,
+          "authenticationConfig": "3ad592cf-6896-494e-aae9-36904342832f"
+        },
+        {
+          "id": "ca6b4e5d-360f-4328-8da9-dec6f48375a8",
+          "requirement": "REQUIRED",
+          "displayName": "User creation or linking",
+          "authenticationFlow": true,
+          "flowId": "d2949f04-ee36-474e-a94e-5379a0a7f171",
+          "level": 0,
+          "index": 1,
+          "priority": 20
+        },
+        {
+          "id": "fc3886d4-fb00-4aeb-bb00-c81532876708",
+          "requirement": "ALTERNATIVE",
+          "displayName": "Create User If Unique",
+          "providerId": "idp-create-user-if-unique",
+          "level": 1,
+          "index": 0,
+          "priority": 10,
+          "authenticationConfig": "067c6b13-4ef6-4a33-b78e-d5f6ceaa86ba"
+        },
+        {
+          "id": "587a149f-f7ed-4079-a708-6e2b3f62957b",
+          "requirement": "ALTERNATIVE",
+          "displayName": "Handle Existing Account",
+          "authenticationFlow": true,
+          "flowId": "ece37b16-9bd2-43a0-86cc-b7f34d64ddcf",
+          "level": 1,
+          "index": 1,
+          "priority": 20
+        },
+        {
+          "id": "5fff44d2-c8d2-404b-8edd-87ad17e66210",
+          "requirement": "REQUIRED",
+          "displayName": "Confirm link existing account",
+          "providerId": "idp-confirm-link",
+          "level": 2,
+          "index": 0,
+          "priority": 10
+        },
+        {
+          "id": "eb0fbb75-3787-4983-95c7-55f2932e28db",
+          "requirement": "REQUIRED",
+          "displayName": "Account verification options",
+          "authenticationFlow": true,
+          "flowId": "e6336c32-71e3-42e4-ac8f-8afbc56d1207",
+          "level": 2,
+          "index": 1,
+          "priority": 20
+        },
+        {
+          "id": "2b6a4958-fbd5-4e34-8123-cbffd6ff95dd",
+          "requirement": "ALTERNATIVE",
+          "displayName": "Verify existing account by Email",
+          "providerId": "idp-email-verification",
+          "level": 3,
+          "index": 0,
+          "priority": 10
+        },
+        {
+          "id": "a19afd73-f7ec-4b5a-8924-241744dbd259",
+          "requirement": "ALTERNATIVE",
+          "displayName": "Verify Existing Account by Re-authentication",
+          "authenticationFlow": true,
+          "flowId": "a7bc82c1-ecc1-4780-b41a-694f83959e4e",
+          "level": 3,
+          "index": 1,
+          "priority": 20
+        },
+        {
+          "id": "fdb1e60b-c5d2-41e3-a1eb-d9fc97d43b79",
+          "requirement": "REQUIRED",
+          "displayName": "Username Password Form for identity provider reauthentication",
+          "providerId": "idp-username-password-form",
+          "level": 4,
+          "index": 0,
+          "priority": 10
+        },
+        {
+          "id": "57dcc81c-c0cb-4d87-b8b9-6cf2e2384ce3",
+          "requirement": "CONDITIONAL",
+          "displayName": "First broker login - Conditional 2FA",
+          "authenticationFlow": true,
+          "flowId": "71ba9c7d-d5b8-4e1c-ac9c-a373f75c41c7",
+          "level": 4,
+          "index": 1,
+          "priority": 20
+        },
+        {
+          "id": "2ca56b00-f97b-48d8-9dc3-457b5bd6f43c",
+          "requirement": "REQUIRED",
+          "displayName": "Condition - user configured",
+          "providerId": "conditional-user-configured",
+          "level": 5,
+          "index": 0,
+          "priority": 10
+        },
+        {
+          "id": "deca5686-0cad-47a8-8fb6-9985422b7118",
+          "requirement": "REQUIRED",
+          "displayName": "Condition - credential",
+          "providerId": "conditional-credential",
+          "level": 5,
+          "index": 1,
+          "priority": 20,
+          "authenticationConfig": "1f09f619-a156-49df-96b7-02a00465fee3"
+        },
+        {
+          "id": "1cb46a79-4bc5-45f9-8e91-fa62d0dd1891",
+          "requirement": "ALTERNATIVE",
+          "displayName": "OTP Form",
+          "providerId": "auth-otp-form",
+          "level": 5,
+          "index": 2,
+          "priority": 30
+        },
+        {
+          "id": "cc0c1a31-f86c-4fa0-993c-2152c74df8e0",
+          "requirement": "DISABLED",
+          "displayName": "WebAuthn Authenticator",
+          "providerId": "webauthn-authenticator",
+          "level": 5,
+          "index": 3,
+          "priority": 40
+        },
+        {
+          "id": "396ad94f-1159-427d-8283-ff688972a889",
+          "requirement": "DISABLED",
+          "displayName": "Recovery Authentication Code Form",
+          "providerId": "auth-recovery-authn-code-form",
+          "level": 5,
+          "index": 4,
+          "priority": 50
+        },
+        {
+          "id": "d6f8d320-6ac1-471b-82bc-d9bf2ab58078",
+          "requirement": "CONDITIONAL",
+          "displayName": "First Broker Login - Conditional Organization",
+          "authenticationFlow": true,
+          "flowId": "61ff381b-770f-4e40-a883-634598001198",
+          "level": 0,
+          "index": 2,
+          "priority": 60
+        },
+        {
+          "id": "927012d8-7fa0-4186-8501-5dd592aa49da",
+          "requirement": "REQUIRED",
+          "displayName": "Condition - user configured",
+          "providerId": "conditional-user-configured",
+          "level": 1,
+          "index": 0,
+          "priority": 10
+        },
+        {
+          "id": "13b9e46d-b558-4980-a194-ec35bae116e4",
+          "requirement": "REQUIRED",
+          "displayName": "Organization Member Onboard",
+          "providerId": "idp-add-organization-member",
+          "level": 1,
+          "index": 1,
+          "priority": 20
+        }
+      ]
+    },
+    {
+      "id": "da19de69-e7c9-420b-8e02-f0334aa2b251",
+      "alias": "docker auth",
+      "providerId": "basic-flow",
+      "topLevel": true,
+      "builtIn": true,
+      "executions": [
+        {
+          "id": "78514ba5-e28d-47ae-bede-31ae5c34b010",
+          "requirement": "REQUIRED",
+          "displayName": "Docker Authenticator",
+          "providerId": "docker-http-basic-authenticator",
+          "level": 0,
+          "index": 0,
+          "priority": 10
+        }
+      ]
+    },
+    {
+      "id": "fadee147-798f-473e-bf14-b5e681806fda",
+      "alias": "browser-password-webauthn",
+      "providerId": "basic-flow",
+      "topLevel": true,
+      "builtIn": false,
+      "executions": [
+        {
+          "id": "1ca822b7-8c54-48fe-ab75-51857e55107f",
+          "requirement": "ALTERNATIVE",
+          "displayName": "Cookie",
+          "providerId": "auth-cookie",
+          "level": 0,
+          "index": 0,
+          "priority": 10
+        },
+        {
+          "id": "7aa475f3-d848-4f89-ab9a-5ad1fab0cec4",
+          "requirement": "DISABLED",
+          "displayName": "Kerberos",
+          "providerId": "auth-spnego",
+          "level": 0,
+          "index": 1,
+          "priority": 20
+        },
+        {
+          "id": "55cda424-7c6d-40bc-be6d-a017c76319bc",
+          "requirement": "ALTERNATIVE",
+          "displayName": "Identity Provider Redirector",
+          "providerId": "identity-provider-redirector",
+          "level": 0,
+          "index": 2,
+          "priority": 25
+        },
+        {
+          "id": "c7aebf6f-9f4a-4512-abf3-50dcf0f84c01",
+          "requirement": "ALTERNATIVE",
+          "displayName": "browser-password-webauthn Organization",
+          "authenticationFlow": true,
+          "flowId": "623d16d3-493f-41a8-bbf7-e7f91ae1d5b7",
+          "level": 0,
+          "index": 3,
+          "priority": 26
+        },
+        {
+          "id": "1f6e3266-1148-44a5-8648-b71606ced14e",
+          "requirement": "CONDITIONAL",
+          "displayName": "browser-password-webauthn Browser - Conditional Organization",
+          "authenticationFlow": true,
+          "flowId": "293c7efd-a992-4f0e-b858-30ce239027d0",
+          "level": 1,
+          "index": 0,
+          "priority": 10
+        },
+        {
+          "id": "3aab63a1-c7d7-4ceb-a8cf-a4e150024749",
+          "requirement": "REQUIRED",
+          "displayName": "Condition - user configured",
+          "providerId": "conditional-user-configured",
+          "level": 2,
+          "index": 0,
+          "priority": 10
+        },
+        {
+          "id": "c98e3478-c80a-45f8-b750-97a8d230cf35",
+          "requirement": "ALTERNATIVE",
+          "displayName": "Organization Identity-First Login",
+          "providerId": "organization",
+          "level": 2,
+          "index": 1,
+          "priority": 20
+        },
+        {
+          "id": "24c730c8-62e7-4f1d-afbb-3dff9e4e70ee",
+          "requirement": "ALTERNATIVE",
+          "displayName": "browser-password-webauthn forms",
+          "authenticationFlow": true,
+          "flowId": "86c3efb3-afa9-4b33-9281-f28c66a29d45",
+          "level": 0,
+          "index": 4,
+          "priority": 30
+        },
+        {
+          "id": "25bf8b0c-a203-48d6-843e-ef07f874c1a4",
+          "requirement": "REQUIRED",
+          "displayName": "Username Password Form",
+          "providerId": "auth-username-password-form",
+          "level": 1,
+          "index": 0,
+          "priority": 10
+        },
+        {
+          "id": "7253cf40-188b-4157-ae60-0e1dd4e9b289",
+          "requirement": "REQUIRED",
+          "displayName": "browser-password-webauthn Browser - Conditional 2FA",
+          "authenticationFlow": true,
+          "flowId": "efe335f0-98b3-4aa0-8101-cf28a01b3f62",
+          "level": 1,
+          "index": 1,
+          "priority": 20
+        },
+        {
+          "id": "3d889d10-b3ef-4d15-9cda-c216846f8ece",
+          "requirement": "DISABLED",
+          "displayName": "Condition - user configured",
+          "providerId": "conditional-user-configured",
+          "level": 2,
+          "index": 0,
+          "priority": 10
+        },
+        {
+          "id": "b5984fda-9daf-427d-87c1-cfde3bb56da5",
+          "requirement": "DISABLED",
+          "displayName": "Condition - credential",
+          "providerId": "conditional-credential",
+          "level": 2,
+          "index": 1,
+          "priority": 20,
+          "authenticationConfig": "c630a345-54fb-466e-9ad5-3f7b0f653128"
+        },
+        {
+          "id": "d66f0061-ae26-45d3-be79-1641e60acb46",
+          "requirement": "DISABLED",
+          "displayName": "OTP Form",
+          "providerId": "auth-otp-form",
+          "level": 2,
+          "index": 2,
+          "priority": 30
+        },
+        {
+          "id": "c48636a0-644e-4025-b395-a60d89b1de20",
+          "requirement": "REQUIRED",
+          "displayName": "WebAuthn Authenticator",
+          "providerId": "webauthn-authenticator",
+          "level": 2,
+          "index": 3,
+          "priority": 40
+        },
+        {
+          "id": "94937ab8-9a09-4eb9-acce-0a7d2205f3a9",
+          "requirement": "DISABLED",
+          "displayName": "Recovery Authentication Code Form",
+          "providerId": "auth-recovery-authn-code-form",
+          "level": 2,
+          "index": 4,
+          "priority": 50
+        }
+      ]
+    },
+    {
+      "id": "5a254377-f5bd-4108-bffc-c862d790227b",
+      "alias": "browser-passkey-uv",
+      "providerId": "basic-flow",
+      "topLevel": true,
+      "builtIn": false,
+      "executions": [
+        {
+          "id": "773c63bd-b3a0-475d-b7d6-32b9e4d62adf",
+          "requirement": "REQUIRED",
+          "displayName": "Username Form",
+          "providerId": "auth-username-form",
+          "level": 0,
+          "index": 0,
+          "priority": 0
+        },
+        {
+          "id": "5ecc7a05-276c-486a-8fb2-609804e763b5",
+          "requirement": "REQUIRED",
+          "displayName": "WebAuthn Passwordless Authenticator",
+          "providerId": "webauthn-authenticator-passwordless",
+          "level": 0,
+          "index": 1,
+          "priority": 1
+        }
+      ]
+    }
+  ],
+  "required_actions": [
+    {
+      "alias": "TERMS_AND_CONDITIONS",
+      "providerId": "TERMS_AND_CONDITIONS",
+      "enabled": false,
+      "defaultAction": false,
+      "priority": 20
+    },
+    {
+      "alias": "UPDATE_PROFILE",
+      "providerId": "UPDATE_PROFILE",
+      "enabled": true,
+      "defaultAction": false,
+      "priority": 40
+    },
+    {
+      "alias": "VERIFY_EMAIL",
+      "providerId": "VERIFY_EMAIL",
+      "enabled": true,
+      "defaultAction": false,
+      "priority": 50
+    },
+    {
+      "alias": "CONFIGURE_TOTP",
+      "providerId": "CONFIGURE_TOTP",
+      "enabled": true,
+      "defaultAction": false,
+      "priority": 54
+    },
+    {
+      "alias": "UPDATE_PASSWORD",
+      "providerId": "UPDATE_PASSWORD",
+      "enabled": true,
+      "defaultAction": false,
+      "priority": 57
+    },
+    {
+      "alias": "delete_account",
+      "providerId": "delete_account",
+      "enabled": false,
+      "defaultAction": false,
+      "priority": 60
+    },
+    {
+      "alias": "UPDATE_EMAIL",
+      "providerId": "UPDATE_EMAIL",
+      "enabled": false,
+      "defaultAction": false,
+      "priority": 70
+    },
+    {
+      "alias": "webauthn-register",
+      "providerId": "webauthn-register",
+      "enabled": true,
+      "defaultAction": false,
+      "priority": 80
+    },
+    {
+      "alias": "webauthn-register-passwordless",
+      "providerId": "webauthn-register-passwordless",
+      "enabled": true,
+      "defaultAction": false,
+      "priority": 90
+    },
+    {
+      "alias": "VERIFY_PROFILE",
+      "providerId": "VERIFY_PROFILE",
+      "enabled": true,
+      "defaultAction": false,
+      "priority": 100
+    },
+    {
+      "alias": "delete_credential",
+      "providerId": "delete_credential",
+      "enabled": true,
+      "defaultAction": false,
+      "priority": 110
+    },
+    {
+      "alias": "idp_link",
+      "providerId": "idp_link",
+      "enabled": true,
+      "defaultAction": false,
+      "priority": 120
+    },
+    {
+      "alias": "CONFIGURE_RECOVERY_AUTHN_CODES",
+      "providerId": "CONFIGURE_RECOVERY_AUTHN_CODES",
+      "enabled": true,
+      "defaultAction": false,
+      "priority": 130
+    },
+    {
+      "alias": "update_user_locale",
+      "providerId": "update_user_locale",
+      "enabled": true,
+      "defaultAction": false,
+      "priority": 1000
+    }
+  ],
+  "observations": {
+    "browser_binding_source": "client_override",
+    "effective_browser_flow": "browser-passkey-uv",
+    "passwordless_uv_setting": "required",
+    "passwordless_rp_id": "auth.readiness.test",
+    "enabled_execution_providers": [
+      "auth-username-form",
+      "webauthn-authenticator-passwordless"
+    ],
+    "result": "INSPECTED_NOT_ACCEPTANCE_TESTED",
+    "limits": [
+      "Client policies, custom providers and existing SSO can affect behavior; review separately.",
+      "No enrollment, UV-negative, recovery, replay or browser test was executed.",
+      "No user or credential endpoint was read. Credential compatibility is still unknown.",
+      "An execution list alone does not prove all fallback paths are closed."
+    ]
+  }
+}

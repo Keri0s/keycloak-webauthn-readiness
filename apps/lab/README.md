@@ -1,5 +1,44 @@
 # Django authentication lab
 
+## Đối chiếu đăng nhập với trang được bảo vệ
+
+Response HTTP 200 của `/private/` có `X-Lab-Session-Ref`, `X-Lab-Subject-Ref`
+và `X-Lab-Binding-Created` sau khi guard xác minh binding. Hai mã đầu là SHA-256
+của định danh đã giới hạn scope, không phải cookie/token hoặc quyền truy cập.
+[Hướng dẫn thu bằng chứng FR-05](../../docs/validation/requirements-review-2026-11-23/fr05-runbook.md).
+Không gửi HAR hoặc Request Headers để đối chiếu. Code mới cần được nạp vào server.
+
+## Callback không hoàn tất (23/11/2026)
+
+Callback bị từ chối sẽ hiện liên kết **Bắt đầu đăng nhập lại** và mã hỗ trợ.
+Giao dịch quá 5 phút có thông báo hết thời gian riêng. Giới hạn 5 phút,
+kiểm tra state/nonce/PKCE, chữ ký token và binding phiên vẫn giữ nguyên.
+Không dùng lại URL callback hoặc URL `login-actions` đã cũ; bắt đầu từ
+`https://app.readiness.test:9443/auth/login/`.
+
+Log chẩn đoán nằm ở `apps/lab/.runtime/logs/oidc-callback.log` (đường dẫn
+tính từ gốc repository), tự xoay vòng tối đa 3 tệp, mỗi tệp 1 MiB.
+Mỗi dòng chỉ có thời gian, mã hỗ trợ, mã lỗi và tên claim từ danh sách cho phép.
+Không ghi URL/query, cookie, state, code, token hay nội dung exception.
+Log này chẩn đoán callback ứng dụng; không chứng minh nguyên nhân hộp thoại
+Windows Security và không thay thế sổ bằng chứng FR-06/FR-07.
+
+Nếu server đang chạy với `--noreload`, dừng đúng terminal Django bằng Ctrl+C
+và chạy lại để nạp bản sửa:
+
+```powershell
+cd D:\Projects\Do-an-thuctap-totnghiep\apps\lab
+.\.venv\Scripts\python.exe manage.py runserver 0.0.0.0:18000 --noreload
+```
+
+Kiểm thử hồi quy offline (không kết nối Keycloak hoặc tạo database):
+
+```powershell
+.\.venv\Scripts\python.exe manage.py test authn.test_oidc_recovery --verbosity 2
+```
+
+Các kiểm thử này không kiểm tra Windows Hello hoặc passkey thật.
+
 ## Các module đã xây dựng
 
 | File/thư mục | Trách nhiệm |

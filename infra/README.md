@@ -1,5 +1,8 @@
 # Hạ tầng lab local
 
+Chuẩn bị chuyển passwordless: [hướng dẫn và công cụ kiểm kê](passwordless/README.md).
+Công cụ đọc cấu hình qua HTTPS; chưa tự thay flow/policy của Keycloak.
+
 | Thành phần | Chức năng |
 | --- | --- |
 | compose.yaml / caddy | Reverse proxy HTTPS trên 127.0.0.1:9443 |

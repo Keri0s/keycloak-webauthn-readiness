@@ -169,9 +169,18 @@ def omit_callback_log(record):
     )
 
 
+AUTH_DIAGNOSTICS_DIR = BASE_DIR / ".runtime" / "logs"
+AUTH_DIAGNOSTICS_DIR.mkdir(parents=True, exist_ok=True)
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
+    "formatters": {
+        "auth_diagnostic": {
+            "format": "{asctime} {levelname} {message}",
+            "style": "{",
+        },
+    },
     "filters": {
         "omit_callback": {
             "()": "django.utils.log.CallbackFilter",
@@ -182,8 +191,21 @@ LOGGING = {
         "django.server": {
             "class": "logging.StreamHandler",
         },
+        "auth_diagnostic": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": str(AUTH_DIAGNOSTICS_DIR / "oidc-callback.log"),
+            "maxBytes": 1_048_576,
+            "backupCount": 2,
+            "encoding": "utf-8",
+            "formatter": "auth_diagnostic",
+        },
     },
     "loggers": {
+        "authn.callback": {
+            "handlers": ["auth_diagnostic"],
+            "level": "WARNING",
+            "propagate": False,
+        },
         "django.server": {
             "handlers": ["django.server"],
             "filters": ["omit_callback"],

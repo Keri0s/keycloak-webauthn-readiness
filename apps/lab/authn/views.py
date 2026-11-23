@@ -4,6 +4,8 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_GET
 
 from .permissions import require_active_binding
+from .diagnostics import record_callback_rejection
+from .evidence import attach_binding_evidence
 
 from authlib.common.errors import AuthlibBaseError
 from django.conf import settings
@@ -35,16 +37,29 @@ from django.views.decorators.csrf import csrf_exempt
 from .backchannel import verify_sid_logout_token
 from .services import process_verified_sid_logout
 
+
+def callback_failure(request, code, *, claim="-", status=400):
+    reference = record_callback_rejection(code, claim)
+    response = render(
+        request,
+        "authn/login_retry.html",
+        {"expired": code == "expired_login_state", "reference": reference},
+        status=status,
+    )
+    response["Referrer-Policy"] = "no-referrer"
+    return response
+
 @never_cache
 @require_GET
 def private_page(request):
     binding = require_active_binding(request)
 
-    return render(
+    response = render(
         request,
         "authn/private.html",
         {"lab_user": binding.user},
     )
+    return attach_binding_evidence(response, binding)
 
 @never_cache
 @require_GET
@@ -62,12 +77,12 @@ def oidc_login(request):
 @require_GET
 def oidc_callback(request):
     if len(request.GET.getlist("state")) != 1:
-        return HttpResponse("Giao dịch đăng nhập không hợp lệ.", status=400)
+        return callback_failure(request, "invalid_callback_parameters")
 
     if "error" not in request.GET and (
         len(request.GET.getlist("code")) != 1 or not request.GET.get("code")
     ):
-        return HttpResponse("Thiếu mã đăng nhập hợp lệ.", status=400)
+        return callback_failure(request, "invalid_callback_parameters")
 
     try:
         token = oauth.keycloak.authorize_access_token(request)
@@ -81,45 +96,15 @@ def oidc_callback(request):
             subject=claims["sub"],
         )
     except (AuthlibBaseError, JoseError) as exc:
-        known_codes = {
-            "invalid_login_state",
-            "expired_or_invalid_login_state",
-            "mismatching_state",
-            "invalid_grant",
-            "invalid_client",
-            "missing_claim",
-            "invalid_claim",
-            "expired_token",
-            "bad_signature",
-            "unexpected_issuer",
-            "unsupported_id_token_algorithm",
-            "missing_validated_id_token",
-        }
-
-        error_code = getattr(exc, "error", "")
-        if error_code not in known_codes:
-            error_code = "other"
-
-        claim = getattr(exc, "claim", "")
-        if claim not in {"iss", "aud", "sub", "sid", "nonce", "exp", "iat", "azp"}:
-            claim = "-"
-
-        print(
-            "OIDC_CALLBACK_REJECTED",
-            type(exc).__name__,
-            error_code,
-            claim,
-            flush=True,
-        )
-
-        return HttpResponse(
-            "Không xác minh được lần đăng nhập này. Hãy bắt đầu lại từ app.",
-            status=400,
+        return callback_failure(
+            request,
+            getattr(exc, "error", ""),
+            claim=getattr(exc, "claim", ""),
         )
     except RequestException:
-        return HttpResponse("Không kết nối được với Keycloak.", status=503)
+        return callback_failure(request, "provider_unavailable", status=503)
     except PermissionDenied:
-        return HttpResponse("Tài khoản hoặc phiên chưa được phép vào app.", status=403)
+        return callback_failure(request, "session_not_allowed", status=403)
 
     return redirect("private")
 

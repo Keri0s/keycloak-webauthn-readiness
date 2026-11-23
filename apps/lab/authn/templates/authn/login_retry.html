@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>Đăng nhập chưa hoàn tất</title>
+</head>
+<body>
+  <main>
+    {% if expired %}
+    <h1>Lượt đăng nhập đã hết thời gian</h1>
+    <p>Hãy bắt đầu lượt đăng nhập mới để tiếp tục.</p>
+    {% else %}
+    <h1>Đăng nhập chưa hoàn tất</h1>
+    <p>Ứng dụng chưa xác minh được lượt đăng nhập này. Bạn có thể bắt đầu lại bên dưới.</p>
+    {% endif %}
+    <p><a href="{% url 'oidc_login' %}">Bắt đầu đăng nhập lại</a></p>
+    <p>Mã hỗ trợ: <code>{{ reference }}</code></p>
+  </main>
+</body>
+</html>

@@ -2,7 +2,23 @@
 
 Đồ án xây dựng bộ đánh giá mức sẵn sàng an ninh và lab kiểm chứng xác thực, quản lý phiên với Keycloak, Django và PostgreSQL. Tác giả: Trần Trung Hiếu.
 
-## Trạng thái ngày 18/11/2026
+## Cập nhật đối chiếu ngày 23/11/2026
+
+Đã hoàn tất kiểm chứng sổ bằng chứng live `evidence/ledger/so_bang_chung.csv`
+(67 dòng từ Keycloak Admin Events qua `apps/ledger`, 13 unit test offline PASS;
+xem [báo cáo sổ live](docs/validation/ledger-2026-11-23/report.md)), cập nhật cấu hình
+hiệu lực mới [inspection 23/11](docs/validation/passwordless-preflight/20261123T135327930466Z/review.md)
+(`app-lab` dùng `browser-passkey-uv`, `UV=required`), rà tĩnh [NFR-01/NFR-02](docs/validation/nfr01-02-2026-11-23/report.md)
+và quét bổ sung [FR-08/NFR-04](docs/validation/fr08-2026-11-23/export-review.md)
+(62 tệp JSON/JSONL/CSV đạt `0` marker khóa riêng). Xem tổng hợp 20 mã tại
+[Ma trận 20 yêu cầu](docs/validation/requirements-review-2026-11-23/report.md) và
+[docs/truy_vet.csv](docs/truy_vet.csv). Tiếp theo còn hoàn thành một lượt demo liền
+mạch từ đăng ký → đăng nhập → mở dòng theo README (NFR-03) và tự điền điểm cho
+phiếu chấm lab thực tại `evidence/lab-scorecard/`. Lỗi native cần Try again vẫn
+tạm hoãn (`DEFERRED_OPEN`); không coi là đã sửa. Các số liệu bảng 18/11 dưới đây
+là mốc lịch sử.
+
+## Trạng thái lịch sử ngày 18/11/2026
 
 | Thành phần | Đã làm | Phần còn lại |
 | --- | --- | --- |
@@ -20,6 +36,7 @@ PASS hiện có chỉ áp dụng cho phạm vi từng bài kiểm thử. 81 test
 | --- | --- |
 | [apps/](apps/README.md) | Hai phần ứng dụng readiness và lab |
 | [apps/readiness/](apps/readiness/README.md) | Models, loader, parser, evaluator và CLI tính điểm |
+| [apps/ledger/](apps/ledger/README.md) | Kéo Keycloak Admin Events và xem sổ bằng chứng theo allowlist |
 | [apps/lab/](apps/lab/README.md) | Django app OIDC và ánh xạ phiên; có chú thích từng module |
 | [infra/](infra/README.md) | Docker Compose cho hai database, Keycloak và Caddy |
 | [tests/](tests/README.md) | Tests readiness và ma trận kịch bản phiên |
@@ -47,5 +64,45 @@ CLI nhận phiếu CSV và catalog YAML; ô chưa chấm khác điểm 0. Bộ m
 ## Chạy lab
 
 Xem [apps/lab/README.md](apps/lab/README.md) và [infra/README.md](infra/README.md). Lab cần cấu hình realm/client, CA tin cậy, role database và danh tính đã liên kết. Clone repository rồi chạy Compose chưa đủ để tái tạo toàn bộ môi trường.
+
+## Demo nghiệm thu SRS (NFR-03)
+
+Mục này mô tả luồng demo tại local để kiểm chứng **đăng ký passkey → đăng nhập passkey → mở một dòng bằng chứng** theo NFR-03:
+
+### Điều kiện chuẩn bị
+- Khởi động hạ tầng Docker tại `infra/` (`docker compose up -d`: `caddy`, `keycloak`, `keycloak-db`, `app-db`).
+- Khởi động ứng dụng Django tại `apps/lab`:
+
+  ```powershell
+  .\apps\lab\.venv\Scripts\python.exe manage.py runserver 0.0.0.0:18000 --noreload
+  ```
+
+- CA nội bộ của Caddy đã được tin cậy trên Windows/trình duyệt; file hosts trỏ `auth.readiness.test` và `app.readiness.test` về `127.0.0.1`; trình duyệt Edge/Chrome và Windows Hello PIN sẵn sàng.
+
+### Ba bước demo chính
+1. **Đăng ký passkey (FR-04 / IF-02 — có bước gán thủ công):**
+   - Trong Keycloak Admin Console (`https://auth.readiness.test:9443`, realm `webauthn-lab`), gán required action `Webauthn Register Passwordless` (`webauthn-register-passwordless`) cho tài khoản thử `lab-user-01` (hoặc cấp quyền đăng ký theo quy trình admin lab).
+   - Mở trình duyệt mới tới `https://app.readiness.test:9443/auth/login/`, nhập username `lab-user-01` và hoàn tất tạo passkey qua hộp thoại Windows Security / nhập PIN (thao tác thủ công của người dùng).
+2. **Đăng nhập bằng passkey vừa tạo (FR-05 / IF-03):**
+   - Nếu đang có phiên trước đó, bấm **Đăng xuất** tại `https://app.readiness.test:9443/private/`.
+   - Mở mới `https://app.readiness.test:9443/auth/login/`, nhập `lab-user-01`, chọn **Sign in with Passkey**, xác nhận Windows Hello PIN và vào `https://app.readiness.test:9443/private/` (HTTP 200, hiển thị `Xin chào, lab-user-01`).
+   - Có thể mở DevTools → Response Headers của `/private/` để xem `X-Lab-Session-Ref` và `X-Lab-Subject-Ref` dùng đối chiếu với Keycloak.
+3. **Kéo và mở một dòng bằng chứng (FR-06 / IF-04 / NFR-04):**
+   - Tại thư mục gốc, kéo sự kiện từ Keycloak Admin Events về sổ CSV (nhập tài khoản quản trị realm `master` trực tiếp trong terminal, không lưu mật khẩu):
+
+     ```powershell
+     .\apps\lab\.venv\Scripts\python.exe -m apps.ledger.cli pull --since 2026-11-16
+     .\apps\lab\.venv\Scripts\python.exe -m apps.ledger.cli show
+     ```
+
+   - Lấy một `evidence_id` trong bảng vừa in rồi mở chi tiết đúng một dòng bằng chứng (chỉ hiện các trường trong allowlist, không chứa khóa riêng):
+
+     ```powershell
+     .\apps\lab\.venv\Scripts\python.exe -m apps.ledger.cli show --id <evidence_id>
+     ```
+
+   - **Phương án xem nguồn dự phòng:** mở Keycloak Admin Console → realm `webauthn-lab` → **Events** → tab **User events** để đối chiếu trực tiếp sự kiện `UPDATE_CREDENTIAL`, `LOGIN`, `LOGIN_ERROR`.
+
+*(Lưu ý thao tác thủ công: gán required action trong Admin Console, xác nhận PIN trên hộp thoại Windows Security và nhập tài khoản quản trị trong terminal khi chạy `pull` hiện vẫn thực hiện thủ công. Hướng dẫn chi tiết thu dữ liệu kiểm thử xem tại [docs/validation/ledger-2026-11-23/runbook.md](docs/validation/ledger-2026-11-23/runbook.md).)*
 
 Bản public không chứa `.env`, khóa riêng, CA runtime, dữ liệu PostgreSQL, cookie, token hoặc tài khoản thật. Chỉ dùng lab local với dữ liệu tổng hợp. SRS là tài liệu định hướng học thuật; phạm vi nghiệm thu cuối cùng còn cần được xác nhận. Các tài liệu bàn giao và trao đổi nội bộ không nằm trong bản public.

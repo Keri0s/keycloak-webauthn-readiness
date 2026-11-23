@@ -41,10 +41,11 @@ class LabKeycloakApp(DjangoOAuth2App):
 
         expires_at = entry.get("exp")
         data = entry.get("data")
+        now = time.time()
 
         valid_expiry = (
             isinstance(expires_at, (int, float))
-            and 0 < expires_at - time.time() <= 300
+            and 0 < expires_at - now <= 300
         )
         valid_data = (
             isinstance(data, dict)
@@ -56,6 +57,12 @@ class LabKeycloakApp(DjangoOAuth2App):
 
         if not valid_expiry or not valid_data:
             self.framework.clear_state_data(request.session, state)
+            if (
+                isinstance(expires_at, (int, float))
+                and expires_at <= now
+                and valid_data
+            ):
+                raise OAuthError(error="expired_login_state")
             raise OAuthError(error="expired_or_invalid_login_state")
 
         kwargs["claims_options"] = {
