@@ -1,0 +1,38 @@
+======================================================================
+   HỆ THỐNG ĐÁNH GIÁ MỨC SẴN SÀNG AN NINH N15 (SRS-TTTN-N15)
+======================================================================
+[+] Đã nạp danh mục: Phiên bản '0.1-mau'
+    - Tổng số tiêu chí: 16
+    - Điểm tối đa toàn thang: 37
+    - Bốn nhóm: cau_hinh, nhat_ky, va_loi, xac_thuc
+[+] Đã đọc phiếu chấm từ: evidence/lab-scorecard/phieu_cham_lab_2026-11-26.csv (16 dòng)
+
+----------------------------------------------------------------------
+KẾT QUẢ ĐÁNH GIÁ PHIẾU CHẤM:
+----------------------------------------------------------------------
+Người chấm       : Trần Trung Hiếu
+Ngày chấm        : 2026-11-26
+
+Chi tiết các tiêu chí trong phiếu:
+Mã       | Nhóm       | Điểm/Max   | Nguồn bằng chứng              
+----------------------------------------------------------------------
+CH-01    | cau_hinh   | 2/3        | infra/Caddyfile; infra/compose.yaml; settings.py (TLS 9443 co; chua redirect HTTP)
+CH-02    | cau_hinh   | 2/2        | apps/lab/config/settings.py (DEBUG=False); views.py; apps/ledger/keycloak.py
+CH-03    | cau_hinh   | 1/2        | apps/lab/config/settings.py (nosniff+DENY co; HSTS=0; chua co CSP)
+CH-04    | cau_hinh   | 3/3        | settings.py; infra/compose.yaml; docs/validation/fr08-2026-11-23/export-review.md
+VA-01    | va_loi     | 1/2        | apps/lab/requirements.txt; infra/compose.yaml (root con >=; chua co SBOM)
+VA-02    | va_loi     | 3/3        | docs/validation/scorecard-evidence-2026-11-26/va02-pip-audit.json + va02-root-pip-audit.json (0 vulns Python)
+VA-03    | va_loi     | 2/2        | docs/validation/scorecard-evidence-2026-11-26/va03-eol-review.md (3 container OS + stack chua EOL)
+VA-04    | va_loi     | 1/2        | WORKFLOW-STATE.md; docs/validation/; Git log (chua co quy trinh va dinh ky)
+XT-01    | xac_thuc   | 3/3        | apps/lab/config/oidc.py; docs/validation/requirements-review-2026-11-23/fr05-observed-185955.md
+XT-02    | xac_thuc   | 2/3        | docs/validation/ledger-2026-11-23/report.md; inspection.json 23/11 (app-lab passkey UV; quan tri chua bat buoc)
+XT-03    | xac_thuc   | 0/2        | docs/validation/scorecard-evidence-2026-11-26/report.md (Keycloak Brute Force Mode: Disabled)
+XT-04    | xac_thuc   | 1/2        | settings.py; views.py; docs/validation/a10-2026-11-18 (9/19 ca PASS; A8/A13b mo)
+NK-01    | nhat_ky    | 3/3        | evidence/ledger/so_bang_chung.csv (67 dong); docs/validation/ledger-2026-11-23/report.md
+NK-02    | nhat_ky    | 2/2        | docs/validation/fr08-2026-11-23/report.md; nfr04-review.md (0 marker khoa rieng)
+NK-03    | nhat_ky    | 0/1        | docs/validation/scorecard-evidence-2026-11-26/report.md (w32tm: W32Time chua chay 0x80070426)
+NK-04    | nhat_ky    | 1/2        | settings.py; inspection.json (eventsExpiration=604800); so_bang_chung.csv (chua co SIEM)
+----------------------------------------------------------------------
+TRẠNG THÁI       : [✓] HOÀN THÀNH (Đủ 16/16 tiêu chí)
+TỔNG ĐIỂM SẴN SÀNG: 27 / 37 điểm
+======================================================================

@@ -62,7 +62,7 @@ Các kiểm thử này không kiểm tra Windows Hello hoặc passkey thật.
 
 ## Chuẩn bị môi trường
 
-Từ apps/lab, tạo venv, cài dependencies rồi sao chép `.env.example` thành `.env` và tự điền secrets. `DJANGO_SECRET_KEY` phải là chuỗi ngẫu nhiên riêng. Đổi khóa có thể khiến phiên đang đăng nhập cần đăng nhập lại.
+Xem quy trình dựng đầy đủ 9 bước từ trạng thái sạch tại [README gốc](../../README.md#hướng-dẫn-dựng-lab-từ-trạng-thái-sạch-clean-setup). Từ `apps/lab`, tạo `.venv`, cài dependencies đúng phiên bản (`Django==5.2.19`, `Authlib==1.9.6`, `requests==2.34.2`, `psycopg[binary]==3.3.9`, `python-dotenv==1.2.4`), sao chép `.env.example` thành `.env` và tự điền secrets. `DJANGO_SECRET_KEY` phải là chuỗi ngẫu nhiên riêng. Đổi khóa có thể khiến phiên đang đăng nhập cần đăng nhập lại.
 
 ```powershell
 python -m venv .venv
@@ -70,20 +70,21 @@ python -m venv .venv
 Copy-Item .env.example .env
 ```
 
-Sau khi hoàn tất các điều kiện bên dưới:
+Sau khi hoàn tất các điều kiện hạ tầng bên dưới:
 
 ```powershell
 .\.venv\Scripts\python.exe manage.py migrate
 .\.venv\Scripts\python.exe manage.py check
-.\.venv\Scripts\python.exe manage.py runserver 0.0.0.0:18000
+# Liên kết ExternalIdentity (không dùng mật khẩu nội bộ) rồi chạy dev server:
+.\.venv\Scripts\python.exe manage.py runserver 0.0.0.0:18000 --noreload
 ```
 
-Điều kiện hiện chưa được tự động hóa đầy đủ:
+Điều kiện hạ tầng cần chuẩn bị trước khi migrate/chạy (chưa tự động hóa):
 
-- PostgreSQL `readiness_lab` ở 127.0.0.1:15432, role ứng dụng `lab_app` và quyền schema phù hợp. Compose chỉ khởi tạo role admin, không tạo sẵn lab_app.
-- Hostnames app.readiness.test/auth.readiness.test trỏ về local; Caddy phục vụ HTTPS cổng 9443. Cấu hình host.docker.internal hiện hướng tới Docker Desktop và Django trên host.
-- CA local của Caddy được tin cậy bởi trình duyệt, ứng dụng và Keycloak. Không đưa CA private key lên Git.
-- Realm webauthn-lab, confidential client app-lab, callback `/auth/callback/`, post logout `/auth/logged-out/` và backchannel `/auth/backchannel-logout/` được cấu hình đúng origin HTTPS.
-- ExternalIdentity phải liên kết issuer/subject với user nội bộ trước khi login. Không tự ghép user theo email.
+- PostgreSQL `readiness_lab` ở `127.0.0.1:15432` đã có role ứng dụng `lab_app` (`Compose` chỉ tạo sẵn `lab_db_admin`); trên PostgreSQL 17 cần cấp tường minh `GRANT CONNECT ON DATABASE readiness_lab TO lab_app;` và `GRANT USAGE, CREATE ON SCHEMA public TO lab_app;` để `manage.py migrate` chạy được.
+- Hostnames `app.readiness.test` và `auth.readiness.test` trỏ về `127.0.0.1`; Caddy phục vụ HTTPS cổng `9443`. Cấu hình `host.docker.internal` hướng tới Docker Desktop và Django chạy trên host cổng `18000`.
+- CA local của Caddy (`infra/.runtime/caddy-data/caddy/pki/authorities/local/root.crt`, dùng trực tiếp bởi `OIDC_CA_BUNDLE` trong `config/settings.py`) được cài tin cậy trên Windows/trình duyệt và chứng chỉ công khai đã sao chép sang `infra/.runtime/keycloak-trust/readiness-root.pem`. Không đưa CA private key lên Git.
+- Realm `webauthn-lab`, flow `browser-passkey-uv` (`auth-username-form` + `webauthn-authenticator-passwordless`), WebAuthn Passwordless Policy (`RP ID=auth.readiness.test`, `UV=required`), confidential client `app-lab` (PKCE `S256`, Browser Flow override `browser-passkey-uv`, callback `/auth/callback/`, post logout `/auth/logged-out/` và backchannel `/auth/backchannel-logout/`) được cấu hình đúng origin HTTPS.
+- `ExternalIdentity` phải liên kết `(issuer, sub)` với user nội bộ `lab-user-01` (không có mật khẩu nội bộ) trước khi login; tham khảo mẫu tại `../../tmp/link_lab_user.py`. Không tự ghép user theo email.
 
-Xem ma trận `../../tests/fixtures/session-mapping-cases.yaml` và `../../docs/ROADMAP.md`. Hiện thu hồi theo SID đã có kiểm chứng từng phần; subject-wide logout và recovery/cutoff chưa hoàn thành. Chưa có hướng dẫn dựng máy sạch đã được kiểm chứng trọn vẹn.
+Xem ma trận `../../tests/fixtures/session-mapping-cases.yaml` và `../../docs/ROADMAP.md`. Hiện thu hồi theo SID đã có kiểm chứng từng phần; subject-wide logout và recovery/cutoff chưa hoàn thành. Quy trình dựng sạch đã được viết chi tiết từ cấu hình hiện hành ngày `26/11/2026`, nhưng **chưa được kiểm chứng lặp lại trên một máy sạch độc lập**.

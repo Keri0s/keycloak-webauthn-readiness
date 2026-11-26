@@ -2,6 +2,7 @@
 
 | Thư mục | Bằng chứng | Giới hạn |
 | --- | --- | --- |
+| [scorecard-evidence-2026-11-26](scorecard-evidence-2026-11-26/report.md) | Bằng chứng `pip-audit`, EOL `/etc/os-release`, `w32tm`, Brute force và kết quả chấm phiếu lab thực `27/37` | `VA-02` quét tầng Python (chưa quét Trivy OS); `XT-03=0` (Disabled), `NK-03=0` (`W32Time` tắt) |
 | [requirements-review-2026-11-23](requirements-review-2026-11-23/report.md) | Đối chiếu đủ 20 mã FR/NFR/IF/DR, kiểm tra hash nguồn và các phần còn thiếu | Phân loại mức bằng chứng, không phải nghiệm thu toàn bộ |
 | [ledger-2026-11-23](ledger-2026-11-23/report.md) | Kiểm chứng sổ bằng chứng live `apps/ledger` (Mục A–C), runbook và giải trình NFR-04 | Quan sát trên lab local; lỗi native Try again giữ DEFERRED_OPEN |
 | [nfr01-02-2026-11-23](nfr01-02-2026-11-23/report.md) | Rà tĩnh NFR-01 (0 hàm quét mạng) và NFR-02 (0 tên miền Trường) | Rà tĩnh mã nguồn/cấu hình công bố; không đọc `.env` thực tế |

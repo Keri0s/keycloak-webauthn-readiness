@@ -1,0 +1,17 @@
+ma,diem,nguon_bang_chung
+CH-01,2,infra/Caddyfile; infra/compose.yaml; settings.py (TLS 9443 co; chua redirect HTTP)
+CH-02,2,apps/lab/config/settings.py (DEBUG=False); views.py; apps/ledger/keycloak.py
+CH-03,1,apps/lab/config/settings.py (nosniff+DENY co; HSTS=0; chua co CSP)
+CH-04,3,settings.py; infra/compose.yaml; docs/validation/fr08-2026-11-23/export-review.md
+VA-01,1,apps/lab/requirements.txt; infra/compose.yaml (root con >=; chua co SBOM)
+VA-02,3,docs/validation/scorecard-evidence-2026-11-26/va02-pip-audit.json + va02-root-pip-audit.json (0 vulns Python)
+VA-03,2,docs/validation/scorecard-evidence-2026-11-26/va03-eol-review.md (3 container OS + stack chua EOL)
+VA-04,1,WORKFLOW-STATE.md; docs/validation/; Git log (chua co quy trinh va dinh ky)
+XT-01,3,apps/lab/config/oidc.py; docs/validation/requirements-review-2026-11-23/fr05-observed-185955.md
+XT-02,2,docs/validation/ledger-2026-11-23/report.md; inspection.json 23/11 (app-lab passkey UV; quan tri chua bat buoc)
+XT-03,0,docs/validation/scorecard-evidence-2026-11-26/report.md (Keycloak Brute Force Mode: Disabled)
+XT-04,1,settings.py; views.py; docs/validation/a10-2026-11-18 (9/19 ca PASS; A8/A13b mo)
+NK-01,3,evidence/ledger/so_bang_chung.csv (67 dong); docs/validation/ledger-2026-11-23/report.md
+NK-02,2,docs/validation/fr08-2026-11-23/report.md; nfr04-review.md (0 marker khoa rieng)
+NK-03,0,docs/validation/scorecard-evidence-2026-11-26/report.md (w32tm: W32Time chua chay 0x80070426)
+NK-04,1,settings.py; inspection.json (eventsExpiration=604800); so_bang_chung.csv (chua co SIEM)

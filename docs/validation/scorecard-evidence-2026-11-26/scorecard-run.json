@@ -1,0 +1,38 @@
+{
+  "evaluated_at_utc": "2026-11-26T15:47:03.487572+00:00",
+  "ngay_cham": "2026-11-26",
+  "nguoi_cham": "Trần Trung Hiếu",
+  "catalog_path": "DU_LIEU_MAU/N15_San_sang_WebAuthn/tieu_chi.yaml",
+  "catalog_sha256": "cc5464cba1f2831643a9958679c4b7c71d73b67cafa3281404ff04051dceb8ca",
+  "scorecard_path": "evidence/lab-scorecard/phieu_cham_lab_2026-11-26.csv",
+  "scorecard_sha256": "77b048e99927cb5a0122fac4286e482a210cc85fc1de797e6b33df749c1616c8",
+  "command": "python -m apps.readiness.cli --scorecard evidence/lab-scorecard/phieu_cham_lab_2026-11-26.csv --evaluator \"Trần Trung Hiếu\" --date 2026-11-26",
+  "exit_code": 0,
+  "status": "hoan_thanh",
+  "total_score": 27,
+  "max_score": 37,
+  "group_scores": {
+    "cau_hinh": {
+      "score": 8,
+      "max": 10
+    },
+    "va_loi": {
+      "score": 7,
+      "max": 9
+    },
+    "xac_thuc": {
+      "score": 6,
+      "max": 10
+    },
+    "nhat_ky": {
+      "score": 6,
+      "max": 8
+    }
+  },
+  "limitations": [
+    "VA-02=3 reflects 0 known vulnerabilities across 18 lab Python packages and 7 root Python packages via pip-audit; OS/JAR container vulnerability scanning (e.g. Trivy) was not executed.",
+    "XT-03=0 reflects observed Brute Force Mode: Disabled on realm webauthn-lab.",
+    "NK-03=0 reflects observed Windows Time (W32Time) service stopped (0x80070426) on the host.",
+    "27/37 is the real lab baseline score on 2026-11-26, distinct from the 29/37 synthetic fixture score."
+  ]
+}

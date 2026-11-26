@@ -1,5 +1,9 @@
 # Tiến độ và công việc tiếp theo
 
+## Chốt phiếu chấm lab thực `27 / 37` và hoàn thiện README dựng sạch — 26/11/2026 UTC+7
+
+Đã hoàn tất thu bằng chứng bổ sung (`VA-02`, `VA-03`, `XT-03`, `NK-03`) và chạy CLI chốt phiếu chấm lab thực ngày `26/11/2026`: **`27 / 37` điểm** (`16/16` tiêu chí, `HOÀN THÀNH`, tách biệt với mẫu fixture `29/37`), lưu tại [báo cáo chấm lab 26/11](validation/scorecard-evidence-2026-11-26/report.md) và `evidence/lab-scorecard/phieu_cham_lab_2026-11-26.csv`. Đồng thời đã bổ sung bảng **Phiên bản công cụ và môi trường thực dùng** và quy trình **Hướng dẫn dựng lab từ trạng thái sạch (Clean Setup)** 9 bước vào `README.md` (đồng bộ `infra/README.md`, `apps/lab/README.md`, `evidence/NFR-03/README.md`, `docs/truy_vet.csv`). Tiếp theo: kiểm chứng dựng lại trên máy sạch độc lập (nếu triển khai máy khác), hoàn tất lượt demo liền mạch theo `README.md` (NFR-03) và sao chép ảnh bằng chứng từ hội thoại vào `evidence/` nếu nộp bản offline. Lỗi native retry giữ `DEFERRED_OPEN`.
+
 ## Hoàn tất kiểm chứng sổ live Mục A–D & đối chiếu inspection — 23/11/2026 21:05 UTC+7
 
 Đã hoàn tất Mục A–D: `evidence/ledger/so_bang_chung.csv` (67 dòng) ghi nhận đủ đăng ký, đăng nhập mới khớp `X-Lab-Session-Ref`, kéo lặp `added=0` và ca hủy `/private/` `403` ([báo cáo sổ live](validation/ledger-2026-11-23/report.md)); `inspection.json` mới (`13:53:27Z`) xác nhận `app-lab` dùng `browser-passkey-uv` (`UV=required`, `RP ID=auth.readiness.test`) ([review](validation/passwordless-preflight/20261123T135327930466Z/review.md)); `audit_fr08_exports.py` quét 62 tệp JSON/JSONL/CSV không phát hiện marker ([export-review](validation/fr08-2026-11-23/export-review.md)). Tiếp theo: demo liền mạch theo `README.md` (NFR-03), sao chép ảnh vào `evidence/` và tự chấm phiếu lab tại `evidence/lab-scorecard/`. Lỗi native retry giữ `DEFERRED_OPEN`.
