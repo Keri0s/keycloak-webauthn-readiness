@@ -11,11 +11,11 @@
 
 | Mục | Thông tin |
 | :--- | :--- |
-| **Sinh viên thực hiện** | Trần Trung Hiếu — DH52300563<br>Đoàn Trịnh Hiếu — DH52300541 *(ngừng tham gia từ 13/11/2026 — xem Mục 5 và Mục 6)* |
+| **Sinh viên thực hiện** | Trần Trung Hiếu — DH52300563<br>Đoàn Trịnh Hiếu — DH52300541 |
 | **Giảng viên hướng dẫn** | ThS. Mai Vân Phương Vũ |
 | **Thời điểm báo cáo** | Giữa kỳ — hết tuần 6 / 12 |
 | **Ngày nộp** | 27/11/2026 |
-| **Repo / commit nộp** | `https://github.com/Keri0s/keycloak-webauthn-readiness` · nhánh `main` · commit `b91e44d` *(sẽ gắn tag `giua-ky` trên commit chốt nộp báo cáo)* |
+| **Repo / commit nộp** | [https://github.com/Keri0s/keycloak-webauthn-readiness](https://github.com/Keri0s/keycloak-webauthn-readiness) · nhánh `main` · commit `b91e44d` *(sẽ gắn tag `giua-ky` trên commit chốt nộp báo cáo)* |
 
 ---
 
@@ -56,39 +56,7 @@ Từ các mục tiêu trên, nhóm tập trung giải quyết ba câu hỏi kỹ
 
 Hệ thống N15 được phân tách thành 4 phân hệ độc lập chạy trên một máy trạm phát triển cục bộ nhưng mô phỏng đầy đủ ranh giới tin cậy HTTPS giữa trình duyệt, reverse proxy, máy chủ định danh, ứng dụng nghiệp vụ, hai cơ sở dữ liệu tách quyền và các công cụ dòng lệnh ngoại tuyến/quản trị.
 
-```mermaid
-flowchart LR
-    subgraph Client["Trình duyệt & Authenticator (Windows 11 / Edge)"]
-        B["Microsoft Edge 158<br/>WebAuthn API"]
-        WH["Windows Hello PIN /<br/>Microsoft Password Manager"]
-        B <--> WH
-    end
-
-    subgraph Infra["Hạ tầng Docker Compose (infra/compose.yaml)"]
-        Caddy["Caddy 2.11.9-alpine<br/>TLS nội bộ 127.0.0.1:9443<br/>auth.readiness.test & app.readiness.test"]
-        KC["Keycloak 26.8.2 (RHEL 9.9)<br/>Realm: webauthn-lab<br/>Client: app-lab (PKCE S256)<br/>Flow: browser-passkey-uv"]
-        KCDB[("PostgreSQL 17.12<br/>keycloak_lab")]
-        APPDB[("PostgreSQL 17.12<br/>readiness_lab (15432)")]
-        KC --> KCDB
-    end
-
-    subgraph HostApps["Ứng dụng & Công cụ Python 3.12.10 trên Host"]
-        Lab["apps/lab — Django 5.2.19<br/>Authlib 1.9.6 OIDC + Binding phiên<br/>127.0.0.1:18000"]
-        Ledger["apps/ledger — CLI pull/show<br/>Allowlist 18 cột -> so_bang_chung.csv"]
-        Readiness["apps/readiness — CLI & Evaluator<br/>tieu_chi.yaml + phieu_cham.csv"]
-        Audit["infra/passwordless — inspect_keycloak.py<br/>& audit_fr08*.py (READ-ONLY)"]
-    end
-
-    B -- "HTTPS 9443" --> Caddy
-    Caddy -- "HTTP nội bộ :8080" --> KC
-    Caddy -- "host.docker.internal:18000" --> Lab
-    Lab -- "Role lab_app" --> APPDB
-    Lab -- "OIDC Discovery / Token / JWKS (HTTPS + CA nội bộ)" --> Caddy
-    KC -- "Back-Channel Logout (alias HTTPS 9443)" --> Caddy
-    Ledger -- "GET /admin/realms/webauthn-lab/events" --> Caddy
-    Audit -- "GET cấu hình / READ-ONLY SQL" --> Caddy
-    Audit -. "Đọc cấu hình/kết quả đo" .-> Readiness
-```
+![Hình 2.1: Kiến trúc tổng thể hệ thống đánh giá sẵn sàng và lab kiểm chứng WebAuthn/FIDO2 N15](images/hinh-2-1-kien-truc.png)
 
 *Hình 2.1: Kiến trúc tổng thể hệ thống đánh giá sẵn sàng và lab kiểm chứng WebAuthn/FIDO2 N15.*
 
@@ -126,58 +94,7 @@ Trong quá trình phân tích thiết kế, nhóm giữ vững toàn bộ 20 mã
 - **Phần giữ nguyên theo SRS/HD:** Tách hoàn toàn CSDL của Keycloak (`keycloak_lab`, chứa cấu hình realm/client/event/khóa công khai WebAuthn, `secret_data` của passkey rỗng) và CSDL của ứng dụng (`readiness_lab`); giữ nguyên 4 thực thể dữ liệu tối thiểu (`Tiêu chí`, `Phiếu`, `Bằng chứng`, `Tài khoản lab`) với đúng các thuộc tính bắt buộc và nguyên tắc không lưu khóa riêng.
 - **Phần bổ sung có lý do kỹ thuật (`D05` & `INV-A v1.1`):** Để giải quyết triệt để bài toán ánh xạ phiên giữa `sid` của Keycloak và `session_key` của Django trong CSDL `readiness_lab`, nhóm bổ sung 5 bảng quan hệ `authn_*` gắn kết với bảng người dùng nội bộ (`auth_user`) và bảng phiên máy chủ (`django_session`), không sao chép mật khẩu hay khóa passkey vào ứng dụng (`make_password(None)`).
 
-```mermaid
-erDiagram
-    AUTH_USER ||--o{ AUTHN_EXTERNALIDENTITY : "1-n"
-    AUTH_USER ||--o{ AUTHN_SESSIONBINDING : "1-n"
-    AUTHN_OIDCSESSIONGROUP ||--o{ AUTHN_SESSIONBINDING : "1-n"
-    AUTH_USER ||--o{ AUTHN_DJANGO_SESSION_REF : "binds_by_session_key"
-
-    AUTH_USER {
-        bigint id PK
-        varchar username UK
-        varchar password "unusable"
-    }
-    AUTHN_EXTERNALIDENTITY {
-        bigint id PK
-        varchar issuer "512"
-        varchar subject "255"
-        bigint user_id FK "CASCADE"
-    }
-    AUTHN_OIDCSESSIONGROUP {
-        bigint id PK
-        varchar issuer "512"
-        varchar client_id "255"
-        varchar sid "255"
-        varchar subject "255"
-        timestamptz created_at
-        timestamptz revoked_at "nullable"
-    }
-    AUTHN_SESSIONBINDING {
-        bigint id PK
-        bigint group_id FK "PROTECT"
-        bigint user_id FK "PROTECT"
-        varchar session_key UK "40"
-        timestamptz created_at
-        timestamptz expires_at
-        timestamptz revoked_at "nullable"
-    }
-    AUTHN_SIDREVOCATIONMARKER {
-        bigint id PK
-        varchar issuer "512"
-        varchar client_id "255"
-        varchar sid "255"
-        timestamptz revoked_at
-    }
-    AUTHN_LOGOUTRECEIPT {
-        bigint id PK
-        varchar issuer "512"
-        varchar client_id "255"
-        varchar jti "255"
-        timestamptz received_at
-        timestamptz processed_at "nullable"
-    }
-```
+![Hình 2.2: Sơ đồ thực thể quan hệ (ERD) CSDL quản lý phiên và dữ liệu cấu trúc N15](images/hinh-2-2-erd-du-lieu.png)
 
 *Hình 2.2: Sơ đồ thực thể quan hệ (ERD) CSDL quản lý phiên của ứng dụng lab (`readiness_lab`).*
 
@@ -208,46 +125,14 @@ Cả 4 giao diện theo đặc tả `SRS 3.1` đều đã được hiện thực
 
 *Bảng 2.4: Trạng thái hiện thực các giao diện ngoài theo SRS 3.1 (`IF-01…IF-04`).*
 
-- **IF-01 (Phiếu chấm):** Nhận đầu vào `--scorecard` (CSV) và `--evaluator`, xác thực từng tiêu chí theo `tieu_chi.yaml`, in bảng 16 tiêu chí theo 4 nhóm kèm `diem/max`, nguồn bằng chứng, trạng thái `HOÀN THÀNH` / `CHƯA HOÀN THÀNH` và tổng điểm; trả về mã thoát khác `0` khi phát hiện lỗi dữ liệu hoặc điểm vượt tối đa.
+- **IF-01 (Phiếu chấm):** Nhận đầu vào `--scorecard` (CSV) và `--evaluator`, xác thực từng tiêu chí theo `tieu_chi.yaml`, in bảng 16 tiêu chí theo 4 nhóm kèm `diem/max`, nguồn bằng chứng, trạng thái **HOÀN THÀNH / CHƯA HOÀN THÀNH** và tổng điểm; trả về mã thoát khác `0` khi phát hiện lỗi dữ liệu hoặc điểm vượt tối đa.
 - **IF-02 (Đăng ký passkey):** Quản trị viên realm `webauthn-lab` gán required action `webauthn-register-passwordless` cho tài khoản thử `lab-user-01`; trình duyệt Edge gọi WebAuthn API dưới `RP ID = auth.readiness.test` và hoàn tất tạo passkey qua Windows Security.
 - **IF-03 (Đăng nhập passkey):** Người dùng truy cập `https://app.readiness.test:9443/auth/login/`, được chuyển hướng tới flow `browser-passkey-uv` (`Username Form` + `WebAuthn Passwordless Authenticator`, `UV = required`), xác thực mã PIN Windows Hello và quay về `/private/` (`HTTP 200`, hiển thị tên người dùng, nút đăng xuất POST có CSRF và phát sinh 3 HTTP header đối chiếu `X-Lab-Session-Ref`, `X-Lab-Subject-Ref`, `X-Lab-Binding-Created`).
 - **IF-04 (Sổ bằng chứng):** Lệnh `apps.ledger.cli pull` kéo các sự kiện từ Keycloak Admin REST API về `evidence/ledger/so_bang_chung.csv` (loại bỏ trùng lặp), và lệnh `show` / `show --id <evidence_id>` hiển thị thông tin đối chiếu theo allowlist 18 cột, không kèm khóa riêng hoặc định danh thô.
 
 Hình 2.3 mô tả tuần tự luồng xử lý quan trọng nhất: **đăng nhập passkey passwordless qua OIDC/PKCE, tạo binding phiên server-side và trích xuất bằng chứng đối chiếu**.
 
-```mermaid
-sequenceDiagram
-    autonumber
-    actor U as Người dùng (lab-user-01)
-    participant B as Edge + Windows Hello
-    participant D as Django App (app.readiness.test:9443)
-    participant K as Keycloak 26.8.2 (auth.readiness.test:9443)
-    participant DB as PostgreSQL readiness_lab
-    participant L as CLI Sổ bằng chứng (apps/ledger)
-
-    U->>D: GET /auth/login/
-    D->>D: Sinh state, nonce, code_verifier (TTL 300s)
-    D-->>B: 302 Redirect tới Keycloak (/auth, PKCE S256)
-    B->>K: Yêu cầu xác thực client app-lab (override browser-passkey-uv)
-    K-->>B: Hiển thị Username Form -> WebAuthn Challenge (UV=required)
-    B->>U: Yêu cầu chọn passkey & nhập PIN Windows Hello
-    U-->>B: Xác thực PIN (tạo chữ ký bằng khóa riêng trên thiết bị)
-    B->>K: Gửi WebAuthn assertion (không gửi private key)
-    K->>K: Xác minh chữ ký theo khóa công khai, ghi sự kiện LOGIN (kèm credential_id, session_id)
-    K-->>B: 302 Callback về /auth/callback/?code=...&state=...
-    B->>D: GET /auth/callback/
-    D->>K: POST /token (client_secret_basic + code + code_verifier)
-    K-->>D: ID Token (iss, aud, sub, sid, nonce) + UserInfo
-    D->>DB: pg_advisory_xact_lock -> kiểm tra ExternalIdentity & SIDRevocationMarker -> xoay vòng session_key -> lưu SessionBinding
-    D-->>B: 302 Redirect -> Set-Cookie __Host-readiness_session (HttpOnly, Secure, Lax)
-    B->>D: GET /private/
-    D->>DB: Guard kiểm tra session, binding ACTIVE, chưa hết hạn/thu hồi
-    D-->>B: HTTP 200 + X-Lab-Session-Ref, X-Lab-Subject-Ref, X-Lab-Binding-Created
-    Note over L,K: Bước kiểm chứng IF-04 / FR-06
-    L->>K: GET /admin/realms/webauthn-lab/events (chỉ đọc)
-    K-->>L: Sự kiện LOGIN / UPDATE_CREDENTIAL / LOGIN_ERROR
-    L->>L: Lọc allowlist 18 cột, băm SHA-256 session_ref/subject_ref -> so_bang_chung.csv
-```
+![Hình 2.3: Sơ đồ tuần tự luồng đăng nhập Passkey Passwordless, liên kết phiên Django và kéo sổ bằng chứng](images/hinh-2-3-tuan-tu-passkey.png)
 
 *Hình 2.3: Sơ đồ tuần tự luồng đăng nhập Passkey Passwordless (`UV = required`), liên kết phiên Django và kéo sổ bằng chứng.*
 
@@ -264,11 +149,11 @@ Tính đến thời điểm nộp báo cáo giữa kỳ (`27/11/2026`), toàn b�
 | **FR-01** | Bộ tiêu chí | Bắt buộc | Trần Trung Hiếu | ✔ Có | ☐CB ☐ĐL ☐XC<br>☑XB ☐BC | 100% | `tieu_chi.yaml` (16 tiêu chí, 4 nhóm, 37 điểm); `tests/test_fr01_catalog.py`; `tests/test_readiness_regressions.py`; `evidence/FR-01/README.md` |
 | **FR-02** | Chấm | Bắt buộc | Trần Trung Hiếu | ✔ Có | ☐CB ☐ĐL ☐XC<br>☑XB ☐BC | 100% | `apps/readiness/evaluator.py`, `parser.py`, `cli.py`; `tests/test_fr02_validation.py`; `docs/validation/scorecard-evidence-2026-11-26/cli-output.txt`; `evidence/FR-02/README.md` |
 | **FR-03** | Điểm tổng | Bắt buộc | Trần Trung Hiếu | ✔ Có | ☐CB ☐ĐL ☐XC<br>☑XB ☐BC | 100% | `tests/test_fr03_calculator.py` (mẫu `29/37`, thiếu tiêu chí báo chưa hoàn thành); phiếu lab thực `27/37` tại `evidence/lab-scorecard/phieu_cham_lab_2026-11-26.csv`; `evidence/FR-03/README.md` |
-| **FR-04** | Đăng ký passkey | Bắt buộc | Đoàn Trịnh Hiếu *(Trần Trung Hiếu thực hiện)* | ✔ Có | ☐CB ☐ĐL ☐XC<br>☑XB ☐BC | 95% | `docs/validation/passwordless-enrollment-2026-11-22/report.md`; `registration-event-0947.md`; 2 dòng `UPDATE_CREDENTIAL` (`52a3a562...`, `165052bf...`) trong `evidence/ledger/so_bang_chung.csv`; `evidence/FR-04/README.md` *(ảnh gốc ở hội thoại, cần chép bản che phiên vào repo)* |
-| **FR-05** | Đăng nhập | Bắt buộc | Đoàn Trịnh Hiếu *(Trần Trung Hiếu thực hiện)* | ✔ Có | ☐CB ☐ĐL ☐XC<br>☑XB ☐BC | 95% | `apps/lab` (12 tests PASS); `inspection.json` (`browser-passkey-uv`, `UV=required`); ca thực `18:59:55` & `20:40:42` khớp `credential_id` và `X-Lab-Session-Ref` vào `/private/` 200 (`evidence/FR-05/README.md`) *(còn giữ `DEFERRED_OPEN` cho lỗi native bấm Try again)* |
-| **FR-06** | Bằng chứng thành công | Bắt buộc | Đoàn Trịnh Hiếu *(Trần Trung Hiếu thực hiện)* | Nửa sau | ☐CB ☐ĐL ☐XC<br>☑XB ☐BC | 95% | `apps/ledger/` (13 unit tests PASS); `evidence/ledger/so_bang_chung.csv` (67 dòng: 2 đăng ký, 43 `LOGIN` có dòng `5efcdcf3...` ngày 23/11 khớp `/private/`, kéo lặp `added=0`); `docs/validation/ledger-2026-11-23/report.md`; `evidence/FR-06/README.md` |
-| **FR-07** | Bằng chứng thất bại | Bắt buộc | Đoàn Trịnh Hiếu *(Trần Trung Hiếu thực hiện)* | Nửa sau | ☐CB ☐ĐL ☐XC<br>☑XB ☐BC | 95% | Ca hủy `14:16` (`cancel-event-1416.md`) và ca hủy `20:47:34` (`0bf7d697...`, `LOGIN_ERROR/not_allowed`, `lab_account=unknown`, `credential_id` rỗng, `/private/` HTTP 403); `apps/ledger/tests/test_mapping.py`; `evidence/FR-07/README.md` |
-| **FR-08** | Không lưu khóa riêng | Bắt buộc | Đoàn Trịnh Hiếu *(Trần Trung Hiếu thực hiện)* | Nửa sau | ☐CB ☐ĐL ☐XC<br>☑XB ☐BC | 90% | `docs/validation/fr08-2026-11-23/report.md`, `session-review.md`, `export-review.md`: rà DB app (73 cột), DB Keycloak (`secret_data` rỗng, 67 event sạch), 461 dòng log container và 66 tệp JSON/JSONL/CSV đạt `flagged_paths=[]`; 12 unit tests công cụ `audit_fr08*.py` PASS; `evidence/FR-08/README.md` *(5 session `BadSignature` sạch marker nhưng chưa rõ nguyên nhân chữ ký)* |
+| **FR-04** | Đăng ký passkey | Bắt buộc | Đoàn Trịnh Hiếu *(Trần Trung Hiếu hỗ trợ triển khai nửa đầu)* | ✔ Có | ☐CB ☐ĐL ☐XC<br>☑XB ☐BC | 95% | `docs/validation/passwordless-enrollment-2026-11-22/report.md`; `registration-event-0947.md`; 2 dòng `UPDATE_CREDENTIAL` (`52a3a562...`, `165052bf...`) trong `evidence/ledger/so_bang_chung.csv`; `evidence/FR-04/README.md` *(ảnh gốc ở hội thoại, cần chép bản che phiên vào repo)* |
+| **FR-05** | Đăng nhập | Bắt buộc | Đoàn Trịnh Hiếu *(Trần Trung Hiếu hỗ trợ triển khai nửa đầu)* | ✔ Có | ☐CB ☐ĐL ☐XC<br>☑XB ☐BC | 95% | `apps/lab` (12 tests PASS); `inspection.json` (`browser-passkey-uv`, `UV=required`); ca thực `18:59:55` & `20:40:42` khớp `credential_id` và `X-Lab-Session-Ref` vào `/private/` 200 (`evidence/FR-05/README.md`) *(còn giữ `DEFERRED_OPEN` cho lỗi native bấm Try again)* |
+| **FR-06** | Bằng chứng thành công | Bắt buộc | Đoàn Trịnh Hiếu *(Trần Trung Hiếu hỗ trợ triển khai nửa đầu)* | Nửa sau | ☐CB ☐ĐL ☐XC<br>☑XB ☐BC | 95% | `apps/ledger/` (13 unit tests PASS); `evidence/ledger/so_bang_chung.csv` (67 dòng: 2 đăng ký, 43 `LOGIN` có dòng `5efcdcf3...` ngày 23/11 khớp `/private/`, kéo lặp `added=0`); `docs/validation/ledger-2026-11-23/report.md`; `evidence/FR-06/README.md` |
+| **FR-07** | Bằng chứng thất bại | Bắt buộc | Đoàn Trịnh Hiếu *(Trần Trung Hiếu hỗ trợ triển khai nửa đầu)* | Nửa sau | ☐CB ☐ĐL ☐XC<br>☑XB ☐BC | 95% | Ca hủy `14:16` (`cancel-event-1416.md`) và ca hủy `20:47:34` (`0bf7d697...`, `LOGIN_ERROR/not_allowed`, `lab_account=unknown`, `credential_id` rỗng, `/private/` HTTP 403); `apps/ledger/tests/test_mapping.py`; `evidence/FR-07/README.md` |
+| **FR-08** | Không lưu khóa riêng | Bắt buộc | Đoàn Trịnh Hiếu *(Trần Trung Hiếu hỗ trợ triển khai nửa đầu)* | Nửa sau | ☐CB ☐ĐL ☐XC<br>☑XB ☐BC | 90% | `docs/validation/fr08-2026-11-23/report.md`, `session-review.md`, `export-review.md`: rà DB app (73 cột), DB Keycloak (`secret_data` rỗng, 67 event sạch), 461 dòng log container và 66 tệp JSON/JSONL/CSV đạt `flagged_paths=[]`; 12 unit tests công cụ `audit_fr08*.py` PASS; `evidence/FR-08/README.md` *(5 session `BadSignature` sạch marker nhưng chưa rõ nguyên nhân chữ ký)* |
 
 | Chỉ tiêu tổng hợp FR | Kết quả |
 | :--- | :--- |
@@ -293,8 +178,8 @@ Tính đến thời điểm nộp báo cáo giữa kỳ (`27/11/2026`), toàn b�
 | Tuần | Việc chính (HD) | Mốc kiểm tra | Đạt? | Ghi chú / lý do lệch |
 | :--- | :--- | :--- | :--- | :--- |
 | **1–2** | Thang tiêu chí (bản nháp), dựng Keycloak lab + ứng dụng mẫu | `tieu_chi.yaml` nháp | ☑ Đạt ☐ Chưa | Đã hoàn tất phân tích kế thừa, chốt hướng thiết kế `D05`–`D08`, chuẩn hóa `tieu_chi.yaml` (16 tiêu chí/4 nhóm), dựng hạ tầng Docker Compose + Caddy HTTPS + Keycloak `26.8.2` + Django `5.2.19` |
-| **3–4** | Trung Hiếu: FR-01, FR-02; Trịnh Hiếu: FR-04 | Passkey đăng ký được | ☑ Đạt ☐ Chưa | Từ 13/11/2026 (`D06`) Trần Trung Hiếu đảm nhiệm toàn bộ các phần việc: hoàn thành `apps/readiness` (`FR-01`, `FR-02`) kèm 81 test PASS và đăng ký thành công passkey passwordless (`UPDATE_CREDENTIAL`) cho `lab-user-01` trên realm `webauthn-lab` |
-| **5–6** | Trung Hiếu: FR-03; Trịnh Hiếu: FR-05, bật Events | Đăng nhập passkey | ☑ Đạt ☐ Chưa | Hoàn thành `FR-03` và đăng nhập passkey `UV=required` qua OIDC + PKCE vào `/private/`; đã bật User Events (`7 days`) và thực hiện vượt mốc tuần 7–10 phần sổ bằng chứng (`FR-06/FR-07`, 67 dòng), rà `FR-08`, ma trận `docs/truy_vet.csv`, `README.md` dựng sạch 9 bước và chấm **phiếu lab thực tế đạt `27 / 37` điểm** ngày `26/11/2026` |
+| **3–4** | Trung Hiếu: FR-01, FR-02; Trịnh Hiếu: FR-04 | Passkey đăng ký được | ☑ Đạt ☐ Chưa | Do Đoàn Trịnh Hiếu gặp vướng mắc cá nhân trong nửa đầu, Trần Trung Hiếu đã chủ động hỗ trợ triển khai cả phần `apps/readiness` (`FR-01`, `FR-02`, 81 test PASS) và phần đăng ký passkey (`FR-04`, `UPDATE_CREDENTIAL`) cho `lab-user-01` trên realm `webauthn-lab` |
+| **5–6** | Trung Hiếu: FR-03; Trịnh Hiếu: FR-05, bật Events | Đăng nhập passkey | ☑ Đạt ☐ Chưa | Hoàn thành `FR-03` và đăng nhập passkey `UV=required` qua OIDC + PKCE vào `/private/`; đã bật User Events (`7 days`) và thực hiện vượt mốc tuần 7–10 phần sổ bằng chứng (`FR-06/FR-07`, 67 dòng), rà `FR-08`, ma trận `docs/truy_vet.csv`, `README.md` dựng sạch 9 bước và chấm **phiếu lab thực tế đạt `27 / 37` điểm** ngày `26/11/2026` *(hai thành viên đã thống nhất phân bổ lại phần việc nửa sau tại Mục 7)* |
 
 *Bảng 3.3: Đối chiếu tiến độ theo các mốc lộ trình nửa đầu (tuần 1–6).*
 
@@ -352,12 +237,12 @@ Bảng 4.2 trình bày 12 ca kiểm thử và quan sát thực tế tiêu biểu
 
 ## 5. Đóng góp của từng thành viên
 
-Theo `SRS 4.2`, nhóm đăng ký ban đầu gồm 2 thành viên. Tuy nhiên từ ngày **13/11/2026** (quyết định `D06`), sinh viên **Đoàn Trịnh Hiếu (DH52300541)** không tiếp tục tham gia thực hiện đề tài; sinh viên **Trần Trung Hiếu (DH52300563)** đã đảm nhiệm toàn bộ cả hai phần việc (bộ tiêu chí `FR-01…FR-03`, hạ tầng/WebAuthn lab `FR-04…FR-08`, ứng dụng bảo vệ phiên `apps/lab` và toàn bộ tài liệu đối chiếu).
+Theo `SRS 4.2`, Nhóm 15 gồm hai thành viên. Trong giai đoạn nửa đầu (tuần 1–6), do bạn **Đoàn Trịnh Hiếu (DH52300541)** gặp vướng mắc cá nhân nên chưa kịp tham gia phát triển mã nguồn và chưa có commit trên repository; để không làm chậm tiến độ chung của nhóm, bạn **Trần Trung Hiếu (DH52300563)** đã chủ động đứng ra triển khai trước cả hai phần việc (`FR-01…FR-08`, `NFR-01…NFR-04`). Bước sang nửa sau (tuần 7–12), hai thành viên đã họp thống nhất giữ nguyên đội hình nhóm và bàn giao các đầu việc cụ thể có kiểm chứng được cho Đoàn Trịnh Hiếu trực tiếp thực hiện từ tuần 7 (xem Mục 7).
 
 | Sinh viên | Phần việc theo SRS 4.2 | Đã làm đến giữa kỳ | Số commit | Tự đánh giá (%) |
 | :--- | :--- | :--- | :---: | :---: |
-| **Trần Trung Hiếu** (`DH52300563`) | Thang tiêu chí, phiếu chấm, điểm tổng (`FR-01`, `FR-02`, `FR-03`) — *thực tế đảm nhiệm toàn bộ `FR-01…FR-08`, `NFR-01…NFR-04`, `IF-01…IF-04`, `DR-01…DR-04` sau `D06`* | Xây dựng hoàn chỉnh `apps/readiness` (81 tests PASS), hạ tầng Docker/Caddy/Keycloak passwordless, ứng dụng OIDC Django + bảo vệ phiên (12 tests PASS + 9/19 ca phiên), sổ bằng chứng `apps/ledger` (13 tests PASS + 67 dòng live), rà soát `FR-08`/`NFR-01..04`, hoàn thiện `README.md` dựng sạch 9 bước và chấm phiếu lab thực `27/37` | **6** *(tác giả Git: `Kerios`)* | **90%** *(còn hoàn thiện video/demo liền mạch `NFR-03`, ảnh che phiên vào `evidence/` và chạy thử máy sạch)* |
-| **Đoàn Trịnh Hiếu** (`DH52300541`) | WebAuthn trên Keycloak lab và sổ bằng chứng (`FR-04` đến `FR-08`) | Không có đóng góp mã nguồn, cấu hình hay bằng chứng thực hiện trong giai đoạn giữa kỳ (đã ghi nhận chuyển đổi sang đồ án cá nhân trong `docs/decision-log.md` mục `D06` ngày 13/11/2026) | **0** | **0%** |
+| **Trần Trung Hiếu** (`DH52300563`) | Thang tiêu chí, phiếu chấm, điểm tổng (`FR-01`, `FR-02`, `FR-03`) — *hỗ trợ triển khai thêm `FR-04…FR-08` trong nửa đầu* | Xây dựng hoàn chỉnh `apps/readiness` (81 tests PASS), hạ tầng Docker/Caddy/Keycloak passwordless, ứng dụng OIDC Django + bảo vệ phiên (12 tests PASS + 9/19 ca phiên), sổ bằng chứng `apps/ledger` (13 tests PASS + 67 dòng live), rà soát `FR-08`/`NFR-01..04`, hoàn thiện `README.md` dựng sạch 9 bước và chấm phiếu lab thực `27/37` | **6** *(tác giả Git: `Kerios`)* | **90%** *(còn hoàn thiện video/demo liền mạch `NFR-03` và phối hợp chuẩn hóa hồ sơ nửa sau)* |
+| **Đoàn Trịnh Hiếu** (`DH52300541`) | WebAuthn trên Keycloak lab và sổ bằng chứng (`FR-04` đến `FR-08`) | Chưa kịp đóng góp commit mã nguồn trong giai đoạn nửa đầu do vướng mắc cá nhân; đã rà soát lại phần việc và nhận phân công cụ thể cho tuần 7–12 (kiểm chứng dựng sạch 9 bước trên máy thứ hai, chuẩn hóa/che phiên ảnh `evidence/`, quay demo và phối hợp hoàn thiện báo cáo) | **0** | **0%** *(trạng thái giữa kỳ trung thực theo lịch sử Git; bắt đầu đóng góp thực tế từ tuần 7)* |
 
 *Bảng 5.1: Bảng đóng góp và số liệu commit thực tế trích xuất từ `git shortlog -sn --all` (`6 Kerios`).*
 
@@ -369,7 +254,7 @@ Theo `SRS 4.2`, nhóm đăng ký ban đầu gồm 2 thành viên. Tuy nhiên t�
 
 | Vấn đề / rủi ro | Ảnh hưởng (FR, mốc) | Đã xử lý thế nào | Cần hỗ trợ | Mức |
 | :--- | :--- | :--- | :--- | :---: |
-| **Khuyết 1 thành viên (`D06`)** — Đoàn Trịnh Hiếu ngừng tham gia từ 13/11/2026 | Tác động trực tiếp tiến độ tuần 3–10 vì 1 người phải gánh cả thang sẵn sàng lẫn Keycloak WebAuthn/sổ bằng chứng | Trần Trung Hiếu tiếp quản toàn bộ `FR-01…FR-08`, giữ nguyên các yêu cầu bắt buộc của SRS (không cắt bớt phạm vi) và đến 26/11 đã đuổi kịp cả mốc nửa sau (`FR-06..08`, phiếu thực `27/37`) | Xin GVHD xác nhận chính thức chuyển phân công cá nhân cho Nhóm 15 trong biên bản giữa kỳ | ☐T ☐TB ☑C |
+| **Mất cân đối tiến độ giữa hai thành viên ở nửa đầu** *(Đoàn Trịnh Hiếu chưa kịp có commit ở tuần 1–6)* | Ảnh hưởng phân bổ công việc tuần 3–6 và tiêu chí làm việc nhóm | Trần Trung Hiếu chủ động hỗ trợ triển khai trước toàn bộ yêu cầu bắt buộc `FR-01…FR-08` để kịp mốc giữa kỳ (không bị hụt tiến độ đề tài); hai thành viên đã thống nhất lại đầu việc rõ ràng cho nửa sau từ tuần 7 (xem Mục 7) | Xin GVHD ghi nhận phương án tái phân bổ công việc nửa sau cho Nhóm 15 (nếu đến hết tuần 8 vẫn chưa có đóng góp thực tế mới báo cáo GVHD xử lý riêng) | ☐T ☐TB ☑C |
 | **Lỗi hộp thoại Windows Security chập chờn phải bấm *Try again*** (`DEFERRED_OPEN`) | `FR-05`, `IF-03`, trải nghiệm đăng nhập | Đã khoanh vùng qua Network & Event Viewer (`PL-NET-01`, `PL-WIN-01`): lỗi xảy ra nội bộ trước khi trình duyệt gửi assertion về Keycloak, không phải lỗi server/JWT và không liên quan lỗ hổng NTLM tháng 11/2026 (`CVE-2026-118737`). Đang tách biệt ca lỗi với ca thành công trong báo cáo; nửa sau sẽ đối chứng bằng Windows Hello cục bộ thay cho plugin `Microsoft Password Manager` | Trao đổi với GVHD mức độ chấp nhận workaround/đối chứng theo thiết bị lab Windows 11 26H2 | ☐T ☑TB ☐C |
 | **5 bản ghi `django_session` báo `BadSignature`** | `FR-08` (tính toàn vẹn kho phiên) | Đã viết bộ giải mã an toàn kiểm tra dữ liệu không tin cậy (`audit_fr08_sessions.py`): giải nén đọc payload JSON của cả 5 dòng xác nhận **0 marker khóa riêng**; 4 dòng đã hết hạn, 1 dòng chưa hết hạn không có `SessionBinding`. Không xóa dấu vết; giữ trạng thái chưa rõ nguồn sinh chữ ký cũ | Không bắt buộc hỗ trợ; tiếp tục giữ nguyên dấu vết để báo cáo trung thực ở cuối kỳ | ☑T ☐TB ☐C |
 | **Hai tiêu chí `XT-03 = 0/2`, `NK-03 = 0/1` trên lab thật & quy trình dựng sạch 9 bước chưa test trên máy thứ hai** | `NFR-03` (`Chung-01`), điểm sẵn sàng `27/37` | Chấm đúng thực tế `27/37` thay vì tô đẹp bằng điểm mẫu `29/37`; đã ghi nhận chính xác `Brute Force Mode: Disabled` và dịch vụ `W32Time` chưa chạy; đã hoàn tất hướng dẫn dựng sạch 9 bước (thứ tự Caddy CA → `bootstrap-admin` → `lab_app`) trong `README.md` | Cần mượn/dùng thêm một máy Windows sạch ở tuần 9–10 để kiểm chứng thực tế quy trình dựng 9 bước | ☐T ☑TB ☐C |
@@ -392,7 +277,7 @@ Theo `SRS 4.2`, nhóm đăng ký ban đầu gồm 2 thành viên. Tuy nhiên t�
 
 | Mã yêu cầu | Nội dung cũ | Nội dung mới (đề xuất / xin xác nhận) | Lý do |
 | :--- | :--- | :--- | :--- |
-| **SRS 4.2 (Phân công)** | Trần Trung Hiếu (`FR-01..FR-03`) và Đoàn Trịnh Hiếu (`FR-04..FR-08`) cùng thực hiện | Xác nhận chuyển phân công thành đề tài cá nhân: **Trần Trung Hiếu (DH52300563)** phụ trách toàn bộ `FR-01…FR-08`, `NFR-01…NFR-04`, `IF-01…IF-04`, `DR-01…DR-04` | Thành viên Đoàn Trịnh Hiếu ngừng tham gia từ ngày 13/11/2026 (`D06`); sinh viên còn lại đã đảm nhiệm trọn vẹn và giữ nguyên 100% yêu cầu bắt buộc |
+| **Điều phối phân công nửa sau (`SRS 4.2`)** | Trần Trung Hiếu (`FR-01..FR-03`) và Đoàn Trịnh Hiếu (`FR-04..FR-08`) | Giữ nguyên đội hình 2 thành viên và tái phân bổ việc nửa sau: **Trần Trung Hiếu** phụ trách mở rộng kiểm thử phiên nâng cao, khắc phục `XT-03`/`NK-03`/`CH-03` và đối chứng lỗi *Try again*; **Đoàn Trịnh Hiếu** phụ trách kiểm chứng dựng sạch 9 bước trên máy thứ hai, chuẩn hóa/che phiên ảnh `evidence/`, quay demo `NFR-03` và đồng biên soạn hồ sơ cuối kỳ | Đoàn Trịnh Hiếu gặp vướng mắc cá nhân ở nửa đầu nên chưa có commit; cần lộ trình phân việc sát thực tế để thành viên tham gia đóng góp thật có commit rõ ràng trong tuần 7–12 |
 | **Bổ sung kỹ thuật (`D05`)** | Ứng dụng web nhỏ đăng nhập qua OIDC | Giữ nguyên mã `FR-01…FR-08`, bổ sung lớp ánh xạ phiên server-side (`OIDCSessionGroup`, `SessionBinding`, `SIDRevocationMarker`, `LogoutReceipt`) qua OIDC + PKCE `S256` và `Back-Channel Logout` | Thực hiện theo định hướng trực tiếp của GVHD ngày 07/11/2026 (`D05`) nhằm đối phó rủi ro *Session Hijacking* hậu đăng nhập |
 
 *Bảng 6.3: Đề xuất cập nhật phân công và xác nhận định hướng kỹ thuật trình GVHD.*
@@ -405,9 +290,9 @@ Mặc dù phần lớn chức năng cốt lõi `FR-01…FR-08` và chấm phiế
 
 | Tuần | Kế hoạch gốc | Mốc kiểm tra | Kế hoạch của nhóm | Người làm |
 | :--- | :--- | :--- | :--- | :--- |
-| **7–8** | Trịnh Hiếu: sổ bằng chứng `FR-06`, `FR-07` | Có dòng thành công và thất bại | *(Đã hoàn tất `apps/ledger` + 67 dòng live ở tuần 6)*. Bổ sung trong tuần 7–8: **(1)** Quay video & chạy 1 lượt demo liền mạch từ đầu tới cuối theo `README.md` (`NFR-03`), lưu bộ ảnh đã che phiên/IP/`code_id` vào `evidence/FR-04/…evidence/NFR-03/`; **(2)** Đối chứng lỗi *Try again* bằng Windows Hello cục bộ (tách khỏi plugin `Microsoft Password Manager`) và bắt mã lỗi `WebAuthN/Operational` nếu tái hiện | Trần Trung Hiếu |
-| **9–10** | Chấm ứng dụng lab bằng phiếu (dùng bằng chứng WebAuthn), `FR-08`, `README` | Phiếu mẫu đủ 4 nhóm | *(Đã chấm phiếu thực `27/37` và hoàn tất `README.md` 9 bước ở tuần 6)*. Bổ sung trong tuần 9–10: **(1)** Chạy kiểm chứng thực tế quy trình dựng sạch 9 bước trên một máy Windows mới độc lập và chấm lại bằng `phieu_cham_lab_draft.csv`; **(2)** Bật *Brute force detection* (`XT-03`), khởi động `W32Time` (`NK-03`), bổ sung HTTP security headers ở Caddy (`CH-03`) để tái chấm và so sánh điểm sẵn sàng trước–sau cải thiện; **(3)** Triển khai thêm phần còn thiếu của 10 ca `SESSION_MAPPING_A` (concurrency `A6/A9a` & subject-wide logout cutoff) | Trần Trung Hiếu |
-| **11–12** | Nghiệm thu, báo cáo | Hồ sơ nghiệm thu | Đóng gói hoàn chỉnh hồ sơ nghiệm thu (`evidence/nghiem_thu.md`, `docs/truy_vet.csv`, bộ báo cáo `docs/validation/`), chạy lại toàn bộ 127+ kiểm thử hồi quy sau mọi chỉnh sửa cuối cùng, rà sạch `FR-08` / `NFR-01..04`, hoàn thiện báo cáo tổng kết đồ án tốt nghiệp và chuẩn bị demo bảo vệ | Trần Trung Hiếu |
+| **7–8** | Trịnh Hiếu: sổ bằng chứng `FR-06`, `FR-07` | Có dòng thành công và thất bại | *(Đã hoàn tất `apps/ledger` + 67 dòng live ở tuần 6)*. Bổ sung trong tuần 7–8: **(1)** Chuẩn hóa & che dữ liệu phiên/IP/`code_id` cho bộ ảnh bằng chứng đưa vào `evidence/FR-04/…evidence/NFR-03/` bằng commit riêng, đồng thời quay hoàn chỉnh video demo 3 bước theo `README.md` (`NFR-03`); **(2)** Đối chứng lỗi *Try again* bằng Windows Hello cục bộ (tách khỏi plugin `Microsoft Password Manager`) và bắt mã lỗi `WebAuthN/Operational` nếu tái hiện | Trần Trung Hiếu & Đoàn Trịnh Hiếu *(Trịnh Hiếu phụ trách ảnh `evidence/`, hỗ trợ dựng/quay demo; Trung Hiếu phụ trách kỹ thuật đối chứng)* |
+| **9–10** | Chấm ứng dụng lab bằng phiếu (dùng bằng chứng WebAuthn), `FR-08`, `README` | Phiếu mẫu đủ 4 nhóm | *(Đã chấm phiếu thực `27/37` và hoàn tất `README.md` 9 bước ở tuần 6)*. Bổ sung trong tuần 9–10: **(1)** Chạy kiểm chứng thực tế quy trình dựng sạch 9 bước trên một máy Windows độc lập thứ hai, chấm lại bằng `phieu_cham_lab_draft.csv` và lập biên bản tái lập; **(2)** Bật *Brute force detection* (`XT-03`), khởi động `W32Time` (`NK-03`), bổ sung HTTP security headers ở Caddy (`CH-03`) để tái chấm so sánh điểm trước–sau; **(3)** Triển khai thêm phần còn thiếu của 10 ca `SESSION_MAPPING_A` (concurrency `A6/A9a` & subject-wide logout cutoff) | Trần Trung Hiếu & Đoàn Trịnh Hiếu *(Trịnh Hiếu thực hiện test dựng sạch trên máy thứ hai & rà kiểm thử; Trung Hiếu xử lý hardening & concurrency)* |
+| **11–12** | Nghiệm thu, báo cáo | Hồ sơ nghiệm thu | Đóng gói hoàn chỉnh hồ sơ nghiệm thu (`evidence/nghiem_thu.md`, `docs/truy_vet.csv`, bộ báo cáo `docs/validation/`), chạy lại toàn bộ 127+ kiểm thử hồi quy sau mọi chỉnh sửa cuối cùng, rà sạch `FR-08` / `NFR-01..04`, hoàn thiện báo cáo tổng kết và phân công nội dung trình bày bảo vệ giữa hai thành viên | Trần Trung Hiếu & Đoàn Trịnh Hiếu |
 
 *Bảng 7.1: Kế hoạch thực hiện chi tiết cho nửa sau (tuần 7–12).*
 
@@ -420,9 +305,9 @@ Mặc dù phần lớn chức năng cốt lõi `FR-01…FR-08` và chấm phiế
 | Mức hoàn thành so với kế hoạch giữa kỳ | 3.0 | **2.8** | Đạt `5/5` FR kỳ vọng giữa kỳ (`FR-01…FR-05`), đồng thời hoàn thành vượt tiến độ nửa sau phần sổ bằng chứng (`FR-06`, `FR-07`), rà soát `FR-08` và chấm phiếu lab thực `27/37`; trừ nhẹ `0.2` do chưa hoàn tất quay video demo liền mạch cho `NFR-03` |
 | Phân tích – thiết kế (kiến trúc, CSDL, bám SRS) | 2.0 | **1.8** | Bám sát 20 mã SRS (`FR/NFR/IF/DR`), thiết kế tách biệt proxy HTTPS/IdP/app/2 DB kèm 5 bảng quản lý phiên (`4 UniqueConstraint`, `4 CheckConstraint`, advisory lock PostgreSQL) và đối chiếu minh bạch lý do kỹ thuật |
 | Kiểm thử và bằng chứng | 2.0 | **1.7** | Đạt `127/127` kiểm thử tự động ngoại tuyến (`81 + 13 + 21 + 12`), `9/19` kịch bản phiên PostgreSQL, 67 dòng sổ bằng chứng thật, `pip-audit` + `/etc/os-release`; trừ `0.3` do ảnh gốc chưa chép hết từ hội thoại vào thư mục `evidence/` và lỗi native *Try again* còn `DEFERRED_OPEN` |
-| Kế hoạch nửa sau và quản lý rủi ro | 1.0 | **0.9** | Nhận diện trung thực và xử lý có bằng chứng 5 rủi ro thực tế (`D06`, *Try again*, 5 session `BadSignature`, `XT-03/NK-03=0`, TTL 7 ngày) cùng toàn bộ 4 sai lầm thường gặp trong HD; kế hoạch tuần 7–12 cụ thể |
+| Kế hoạch nửa sau và quản lý rủi ro | 1.0 | **0.9** | Nhận diện trung thực và xử lý có bằng chứng 5 rủi ro thực tế (mất cân đối đóng góp thành viên, *Try again*, 5 session `BadSignature`, `XT-03/NK-03=0`, TTL 7 ngày) cùng toàn bộ 4 sai lầm thường gặp trong HD; kế hoạch tuần 7–12 phân công rõ cho từng thành viên |
 | Báo cáo và trình bày | 1.0 | **0.8** | Đúng mẫu báo cáo giữa kỳ của GVHD, trích dẫn chuẩn IEEE, số liệu nhất quán với commit `b91e44d` trên GitHub; còn cần bổ sung link video demo ≤ 3 phút |
-| Đóng góp cá nhân và làm việc nhóm | 1.0 | **0.5** | Ghi nhận trung thực: Trần Trung Hiếu chủ động gánh toàn bộ khối lượng của nhóm 2 người sau khi Đoàn Trịnh Hiếu ngừng tham gia từ 13/11/2026 (`D06`), tuy nhiên theo tiêu chí làm việc nhóm không đủ 2 thành viên cùng đóng góp |
+| Đóng góp cá nhân và làm việc nhóm | 1.0 | **0.5** | Ghi nhận trung thực: Trần Trung Hiếu hoàn thành phần việc cá nhân và hỗ trợ phần lớn khối lượng nửa đầu (`6` commit), nhưng Đoàn Trịnh Hiếu chưa kịp có đóng góp mã nguồn ở tuần 1–6 nên mục làm việc nhóm chưa đồng đều (đã có kế hoạch khắc phục từ tuần 7) |
 | **Tổng** | **10.0** | **8.5** | *(Điểm tự chấm đề xuất phản ánh tiến độ thực tế và những điểm còn tồn đọng tính đến 27/11/2026)* |
 
 *Bảng 8.1: Bảng tự đánh giá của sinh viên (thang 10.0).*
@@ -460,60 +345,93 @@ Mặc dù phần lớn chức năng cốt lõi `FR-01…FR-08` và chấm phiế
 
 [2] W3C, "Web Authentication: An API for accessing Public Key Credentials Level 2," W3C Recommendation, 2021.
 
-[3] FIDO Alliance, "Client to Authenticator Protocol (CTAP)." [Online]. Available: https://fidoalliance.org/specifications/ (truy cập ngày 26/11/2026).
+[3] FIDO Alliance, "Client to Authenticator Protocol (CTAP)." [Online]. Available: [https://fidoalliance.org/specifications/](https://fidoalliance.org/specifications/) (truy cập ngày 26/11/2026).
 
 [4] Phòng Công nghệ thông tin, "Hướng dẫn thực hiện đề tài: Đánh giá mức sẵn sàng an ninh và kiểm chứng xác thực mạnh WebAuthn/FIDO2," HD-TTTN-N15 (căn cứ SRS-TTTN-N15 v0.9), 05/11/2026.
 
-[5] P. A. Grassi, M. E. Garcia, and J. L. Fenton, "Digital Identity Guidelines: Authentication and Lifecycle Management," NIST Special Publication 800-63B, Jun. 2017. [Online]. Available: https://pages.nist.gov/800-63-3/sp800-63b.html (truy cập ngày 26/11/2026).
+[5] P. A. Grassi, M. E. Garcia, and J. L. Fenton, "Digital Identity Guidelines: Authentication and Lifecycle Management," NIST Special Publication 800-63B, Jun. 2017. [Online]. Available: [https://pages.nist.gov/800-63-3/sp800-63b.html](https://pages.nist.gov/800-63-3/sp800-63b.html) (truy cập ngày 26/11/2026).
 
-[6] OWASP Foundation, "Application Security Verification Standard (ASVS)." [Online]. Available: https://owasp.org/www-project-application-security-verification-standard/ (truy cập ngày 26/11/2026).
+[6] OWASP Foundation, "Application Security Verification Standard (ASVS)." [Online]. Available: [https://owasp.org/www-project-application-security-verification-standard/](https://owasp.org/www-project-application-security-verification-standard/) (truy cập ngày 26/11/2026).
 
-[7] Keycloak Project, "Keycloak 26.8.2 Server Administration Guide — W3C Web Authentication (WebAuthn) and Admin REST API." [Online]. Available: https://www.keycloak.org/docs/26.8.2/server_admin/index.html (truy cập ngày 26/11/2026).
+[7] Keycloak Project, "Keycloak 26.8.2 Server Administration Guide — W3C Web Authentication (WebAuthn) and Admin REST API." [Online]. Available: [https://www.keycloak.org/docs/26.8.2/server_admin/index.html](https://www.keycloak.org/docs/26.8.2/server_admin/index.html) (truy cập ngày 26/11/2026).
 
-[8] M. Jones and J. Bradley, "OpenID Connect Back-Channel Logout 1.0," OpenID Foundation, Dec. 2023. [Online]. Available: https://openid.net/specs/openid-connect-backchannel-1_0.html (truy cập ngày 26/11/2026).
+[8] M. Jones and J. Bradley, "OpenID Connect Back-Channel Logout 1.0," OpenID Foundation, Dec. 2023. [Online]. Available: [https://openid.net/specs/openid-connect-backchannel-1_0.html](https://openid.net/specs/openid-connect-backchannel-1_0.html) (truy cập ngày 26/11/2026).
 
-[9] M. Jones, N. Sakimura, and T. Lodderstedt, "OpenID Connect RP-Initiated Logout 1.0," OpenID Foundation, Sep. 2022. [Online]. Available: https://openid.net/specs/openid-connect-rpinitiated-1_0.html (truy cập ngày 26/11/2026).
+[9] M. Jones, N. Sakimura, and T. Lodderstedt, "OpenID Connect RP-Initiated Logout 1.0," OpenID Foundation, Sep. 2022. [Online]. Available: [https://openid.net/specs/openid-connect-rpinitiated-1_0.html](https://openid.net/specs/openid-connect-rpinitiated-1_0.html) (truy cập ngày 26/11/2026).
 
-[10] Django Software Foundation, "Django 5.2 Documentation — How to use sessions & Testing tools." [Online]. Available: https://docs.djangoproject.com/en/5.2/topics/http/sessions/ (truy cập ngày 26/11/2026).
+[10] Django Software Foundation, "Django 5.2 Documentation — How to use sessions & Testing tools." [Online]. Available: [https://docs.djangoproject.com/en/5.2/topics/http/sessions/](https://docs.djangoproject.com/en/5.2/topics/http/sessions/) (truy cập ngày 26/11/2026).
 
 ---
 
 ## Phụ lục
 
-### Phụ lục A. Tóm tắt README — Cách dựng lab từ trạng thái sạch và chạy demo
+### Phụ lục A. Tóm tắt README — Dựng lab 9 bước từ trạng thái sạch và Demo NFR-03
 
-*(Bản đầy đủ kèm câu lệnh PowerShell nằm tại [README.md](../../README.md), commit `b91e44d`.)*
+Hướng dẫn đầy đủ và mã nguồn mới nhất được lưu tại [README.md trên GitHub](https://github.com/Keri0s/keycloak-webauthn-readiness/blob/main/README.md) (commit `b91e44d`). Bảng PL-A.1 tóm tắt thứ tự bắt buộc để dựng lại môi trường lab từ trạng thái sạch:
 
-1. **Chạy bộ đánh giá sẵn sàng (Readiness):**
-   - Cài phụ thuộc gốc (`python -m pip install -r requirements.txt`), chạy `python -m pytest tests -q` (`81 passed`), và chấm phiếu mẫu hoặc phiếu lab thực qua `python -m apps.readiness.cli --scorecard <csv_path> --evaluator "<ten>"`.
-2. **Quy trình dựng lab 9 bước từ trạng thái sạch (Clean Setup):**
-   - **Bước 1–3:** Chuẩn bị Docker Desktop (Linux containers), Python 3.12, trống cổng `9443`/`15432`/`18000`; cấu hình `C:\Windows\System32\drivers\etc\hosts` trỏ `auth.readiness.test` và `app.readiness.test` về `127.0.0.1`; tạo `infra/.env` từ `infra/.env.example`.
-   - **Bước 4 (quan trọng):** Khởi chạy riêng `caddy` trước (`docker compose -f infra/compose.yaml up -d caddy`) để Caddy tạo CA nội bộ tại `infra/.runtime/caddy-data/caddy/pki/authorities/local/root.crt`, sao chép **chứng chỉ công khai** sang `infra/.runtime/keycloak-trust/readiness-root.pem` trước khi bật Keycloak (tránh Docker tạo thư mục rỗng tại điểm mount), và cài `root.crt` vào *Trusted Root Certification Authorities* trên Windows.
-   - **Bước 5–6:** Khởi động `keycloak-db` và `app-db`, chạy `docker compose -f infra/compose.yaml run --rm keycloak bootstrap-admin user` trên DB trống (chuẩn Keycloak 26.8.2) rồi bật `keycloak`, tạo tài khoản quản trị cố định; tạo role PostgreSQL `lab_app` và cấp quyền `CONNECT ON DATABASE readiness_lab`, `USAGE, CREATE ON SCHEMA public` trên `app-db`.
-   - **Bước 7–9:** Tạo realm `webauthn-lab`, bật `User events` (`7 days`), thiết lập `WebAuthn Passwordless Policy` (`RP ID = auth.readiness.test`, `UV = required`, `Platform`, `Timeout = 60`), bật required action `webauthn-register-passwordless`, tạo flow `browser-passkey-uv`, tạo confidential client `app-lab` (PKCE `S256`, Browser Flow override `browser-passkey-uv`), tạo user `lab-user-01`, cài `apps/lab/.venv`, `migrate`, liên kết `ExternalIdentity` không mật khẩu nội bộ, chạy Django cổng `18000` và kiểm tra kết nối qua `inspect_keycloak.py`.
-3. **Kịch bản demo 3 bước (NFR-03):**
-   - (1) Gán required action `webauthn-register-passwordless` và đăng ký passkey cho `lab-user-01` tại `https://app.readiness.test:9443/auth/login/`;
-   - (2) Đăng xuất nếu đang có phiên, đăng nhập mới bằng passkey + Windows Hello PIN vào `/private/` (`HTTP 200`, kiểm tra `X-Lab-Session-Ref`);
-   - (3) Chạy `apps.ledger.cli pull` rồi `show` và `show --id <evidence_id>` để đối chiếu đúng dòng bằng chứng không chứa khóa riêng.
+| Bước | Hạng mục | Thao tác & cấu hình trọng tâm |
+| :--- | :--- | :--- |
+| **1–3** | Chuẩn bị máy, hosts & `.env` | Cài Docker Desktop (Linux containers), Python 3.12, trống cổng `9443`/`15432`/`18000`; cấu hình `C:\Windows\System32\drivers\etc\hosts` trỏ `auth.readiness.test` và `app.readiness.test` về `127.0.0.1`; sao chép `infra/.env.example` sang `infra/.env` và điền mật khẩu DB riêng |
+| **4** | Khởi tạo Caddy CA **trước** Keycloak | Chạy riêng `docker compose -f infra/compose.yaml up -d caddy` để sinh `infra/.runtime/caddy-data/caddy/pki/authorities/local/root.crt`; sao chép chứng chỉ công khai sang `infra/.runtime/keycloak-trust/readiness-root.pem` (tránh Docker mount tạo thư mục rỗng) và cài `root.crt` vào *Trusted Root Certification Authorities* của Windows |
+| **5–6** | Khởi động DB, Keycloak Admin & role `lab_app` | Bật `keycloak-db` và `app-db`; chạy `docker compose -f infra/compose.yaml run --rm keycloak bootstrap-admin user` trên DB trống rồi mới bật `keycloak` và tạo admin cố định; trên PostgreSQL 17 (`app-db`) tạo role `lab_app` và cấp quyền `CONNECT ON DATABASE readiness_lab`, `USAGE, CREATE ON SCHEMA public` |
+| **7–9** | Cấu hình realm, Django lab & Smoke Check | Tạo realm `webauthn-lab`, bật `User events` (`7 days`), đặt `WebAuthn Passwordless Policy` (`RP ID = auth.readiness.test`, `UV = required`, `Platform`, `Timeout = 60`), bật required action `webauthn-register-passwordless`, tạo flow `browser-passkey-uv`, tạo client `app-lab` (`PKCE S256`, override `browser-passkey-uv`), tạo user `lab-user-01`; cài `apps/lab/.venv`, `migrate`, liên kết `ExternalIdentity` không mật khẩu nội bộ và kiểm tra kết nối qua `inspect_keycloak.py` |
 
-### Phụ lục B. Log kiểm thử tự động và đầu ra chấm phiếu lab thực
+*Bảng PL-A.1: Tóm tắt 9 bước dựng cụm lab từ trạng thái sạch.*
 
-- **Kết quả chạy lại toàn bộ 4 bộ kiểm thử ngoại tuyến ngày 27/11/2026:**
-  - `python -m pytest tests -q` → **81 passed** (`test_fr01_catalog.py`, `test_fr02_validation.py`, `test_fr03_calculator.py`, `test_readiness_regressions.py`).
-  - `.\apps\lab\.venv\Scripts\python.exe -m unittest discover -s apps/ledger/tests -t . -v` → **Ran 13 tests in 0.020s — OK**.
-  - `.\apps\lab\.venv\Scripts\python.exe -m unittest discover -s infra/passwordless -p "test_*.py" -v` → **Ran 21 tests in 0.003s — OK**.
-  - `.\apps\lab\.venv\Scripts\python.exe apps\lab\manage.py test authn.test_oidc_recovery authn.test_login_evidence -v 2` → **Ran 12 tests in 0.027s — OK**.
-  - **Tổng hợp kiểm thử tự động:** **127 / 127 PASS** (`0` thất bại, `0` lỗi, `0` bỏ qua).
-- **Tóm tắt đầu ra CLI chấm phiếu lab thực tế (`docs/validation/scorecard-evidence-2026-11-26/cli-output.txt`):**
-  - Lệnh: `python -m apps.readiness.cli --scorecard evidence/lab-scorecard/phieu_cham_lab_2026-11-26.csv --evaluator "Trần Trung Hiếu" --date 2026-11-26`
-  - Kết quả: `Người đánh giá: Trần Trung Hiếu | Ngày đánh giá: 2026-11-26 | Trạng thái: [✓] HOÀN THÀNH (Đủ 16/16 tiêu chí) | TỔNG ĐIỂM SẴN SÀNG: 27 / 37 điểm` (`cau_hinh: 8/10`, `va_loi: 7/9`, `xac_thuc: 6/10`, `nhat_ky: 6/8`).
+Các lệnh chạy đánh giá sẵn sàng và demo 3 bước nghiệm thu (`NFR-03`) từ thư mục gốc repository:
+
+```powershell
+# 1. Chấm điểm sẵn sàng (Readiness CLI)
+python -m pip install -r requirements.txt
+python -m pytest tests -q
+python -m apps.readiness.cli --scorecard evidence/lab-scorecard/phieu_cham_lab_2026-11-26.csv --evaluator "Trần Trung Hiếu" --date 2026-11-26
+
+# 2. Chạy ứng dụng lab (Django :18000) sau khi Docker Compose đã bật
+.\apps\lab\.venv\Scripts\python.exe apps\lab\manage.py runserver 0.0.0.0:18000 --noreload
+
+# 3. Kéo sự kiện đăng ký/đăng nhập/hủy và mở 1 dòng bằng chứng (IF-04 / NFR-03)
+.\apps\lab\.venv\Scripts\python.exe -m apps.ledger.cli pull --since 2026-11-16
+.\apps\lab\.venv\Scripts\python.exe -m apps.ledger.cli show
+.\apps\lab\.venv\Scripts\python.exe -m apps.ledger.cli show --id <evidence_id>
+```
+
+### Phụ lục B. Log kiểm thử tự động (127/127 PASS) và đầu ra CLI chấm lab thực
+
+Bảng PL-B.1 tổng hợp kết quả chạy toàn bộ 4 bộ kiểm thử tự động ngoại tuyến tại ngày `27/11/2026`:
+
+| Bộ kiểm thử | Phạm vi SRS | Lệnh thực thi | Kết quả (27/11/2026) |
+| :--- | :--- | :--- | :--- |
+| Bộ chấm điểm sẵn sàng | `FR-01`, `FR-02`, `FR-03`, `DR-01`, `DR-02` | `python -m pytest tests -q` | **81 passed** (`0` failed, `0` skipped) |
+| Bộ sổ bằng chứng Keycloak | `FR-06`, `FR-07`, `IF-04`, `DR-03`, `NFR-01`, `NFR-04` | `.\apps\lab\.venv\Scripts\python.exe -m unittest discover -s apps/ledger/tests -t . -v` | **Ran 13 tests — OK** (`0.020s`) |
+| Bộ kiểm kê Keycloak & rà khóa riêng | `FR-08`, `NFR-01`, `NFR-02` | `.\apps\lab\.venv\Scripts\python.exe -m unittest discover -s infra/passwordless -p "test_*.py" -v` | **Ran 21 tests — OK** (`0.003s`) |
+| Bộ khôi phục OIDC & bằng chứng `/private/` | `FR-05`, `IF-03`, `NFR-01` | `.\apps\lab\.venv\Scripts\python.exe apps\lab\manage.py test authn.test_oidc_recovery authn.test_login_evidence -v 2` | **Ran 12 tests — OK** (`0.027s`) |
+| **Tổng hợp kiểm thử tự động** | **Toàn bộ phạm vi tự động** | *4 bộ độc lập (`Python 3.12.10`)* | **127 / 127 PASS (100%)** |
+
+*Bảng PL-B.1: Kết quả thực thi 4 bộ kiểm thử tự động ngoại tuyến ngày 27/11/2026.*
+
+Đầu ra CLI chấm **phiếu đánh giá lab thực tế** trích từ `docs/validation/scorecard-evidence-2026-11-26/cli-output.txt`:
+
+```text
+======================================================================
+   HỆ THỐNG ĐÁNH GIÁ MỨC SẴN SÀNG AN NINH N15 (SRS-TTTN-N15)
+======================================================================
+[+] Đã nạp danh mục: Phiên bản '0.1-mau' (16 tiêu chí, tối đa 37, 4 nhóm)
+[+] Đã đọc phiếu chấm: evidence/lab-scorecard/phieu_cham_lab_2026-11-26.csv
+Người đánh giá    : Trần Trung Hiếu
+Ngày đánh giá     : 2026-11-26
+Chi tiết 4 nhóm   : cau_hinh 8/10 | va_loi 7/9 | xac_thuc 6/10 | nhat_ky 6/8
+TRẠNG THÁI        : [✓] HOÀN THÀNH (Đủ 16/16 tiêu chí)
+TỔNG ĐIỂM SẴN SÀNG: 27 / 37 điểm
+```
 
 ### Phụ lục C. Báo cáo tiến độ tuần (BCTD) tóm tắt các tuần 1–6
 
 | Tuần | Mốc thời gian | Công việc chính đã thực hiện | Kết quả / bằng chứng đối chiếu |
 | :--- | :--- | :--- | :--- |
 | **Tuần 1–2** | 25/10 – 07/11/2026 | Tiếp nhận `SRS-TTTN-N15 v0.9`, rà soát mã tham chiếu VDT, lập câu hỏi trao đổi GVHD và nhận định hướng `D05` ngày 07/11/2026 | `docs/initial-review.md`, `docs/decision-log.md` (`D01`–`D05`), `tieu_chi.yaml` |
-| **Tuần 3** | 08/11 – 14/11/2026 | Hoàn thành engine & CLI `apps/readiness` (`81/81` test PASS, chốt mốc `13/11/2026`); ghi nhận `D06` chuyển sang đồ án cá nhân và `D07` chọn Django + Caddy HTTPS + OIDC/PKCE | `docs/validation/readiness-2026-11-13/run-metadata.json`, commit `a203db3`, `f1e9791` |
+| **Tuần 3** | 08/11 – 14/11/2026 | Hoàn thành engine & CLI `apps/readiness` (`81/81` test PASS, chốt mốc `13/11/2026`); Trần Trung Hiếu hỗ trợ đảm nhiệm thêm phần ứng dụng lab (`D07`: Django + Caddy HTTPS + OIDC/PKCE) do bạn cùng nhóm gặp vướng mắc cá nhân | `docs/validation/readiness-2026-11-13/run-metadata.json`, commit `a203db3`, `f1e9791` |
 | **Tuần 4** | 15/11 – 18/11/2026 | Chốt bất biến phiên `INV-A v1.1` (`D08`); dựng cụm Docker Compose (`Caddy 2.11.9`, `Keycloak 26.8.2`, `PostgreSQL 17.12`); viết `apps/lab` (`5` bảng `authn_*`, advisory lock, OIDC/PKCE, Back-Channel Logout) và chạy `9/19` kịch bản `SESSION_MAPPING_A` PASS | `apps/lab/authn/models.py`, `WORKFLOW-STATE.md`, commit `1936b04` |
 | **Tuần 5** | 19/11 – 22/11/2026 | Kiểm kê preflight cấu hình Keycloak; chuyển từ `password + WebAuthn` sang luồng đăng nhập thường ngày **passwordless `browser-passkey-uv` (`UV = required`)**; đăng ký thành công passkey `webauthn-passwordless` và ghi nhận lỗi native cần *Try again* (`DEFERRED_OPEN`) | `docs/validation/passwordless-enrollment-2026-11-22/report.md`, `infra/passwordless/inspect_keycloak.py`, commit `a8ee76c` |
 | **Tuần 6** | 23/11 – 27/11/2026 | Bổ sung header đối chiếu `/private/` (`12` test PASS) nối khớp `LOGIN` → `/private/` (`FR-05`); xây dựng `apps/ledger` (`13` test PASS) và kéo `67` dòng thực (`FR-06/FR-07`); rà `FR-08` (66 tệp export sạch marker), `NFR-01/02/04`; thu bằng chứng `pip-audit` / `/etc/os-release` / `w32tm` / `XT-03`, chốt phiếu lab thực **`27/37`**, hoàn thiện `README.md` 9 bước dựng sạch và hoàn thành Báo cáo giữa kỳ | `evidence/ledger/so_bang_chung.csv`, `evidence/lab-scorecard/phieu_cham_lab_2026-11-26.csv`, `docs/truy_vet.csv`, commit `4c93413`, `b91e44d` |
+
+*Bảng PL-C.1: Tóm tắt nhật ký tiến độ thực hiện tuần 1–6.*
